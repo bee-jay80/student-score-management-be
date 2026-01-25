@@ -22,6 +22,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'jazzmin',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -45,6 +46,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'accounts.middleware.RefreshTokenMiddleware',
 ]
 
 ROOT_URLCONF = 'config.urls'
@@ -54,7 +56,7 @@ AUTH_USER_MODEL = 'accounts.User'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / "templates"],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -125,12 +127,17 @@ REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
         "accounts.authentication.CookieJWTAuthentication",
     ),
+
+    "DEFAULT_THROTTLE_CLASSES": [
+        "rest_framework.throttling.AnonRateThrottle",
+        "rest_framework.throttling.UserRateThrottle",
+    ],
+    "DEFAULT_THROTTLE_RATES": {
+        "anon": "10/min",
+        "user": "5/min",
+        "otp": "3/min",
+    },
 }
-# REST_FRAMEWORK = {
-#     "DEFAULT_PERMISSION_CLASSES": (
-#         "rest_framework.permissions.IsAuthenticated",
-#     ),
-# }
 
 
 # JWT
@@ -157,3 +164,20 @@ JWT_REFRESH_COOKIE = "refresh_token"
 JWT_COOKIE_SECURE = False      # True in production (HTTPS)
 JWT_COOKIE_HTTP_ONLY = True
 JWT_COOKIE_SAMESITE = "Lax"    # "Strict" or "None" (if cross-site)
+
+
+
+# Email config for password reset (production-ready via .env)
+EMAIL_BACKEND = os.getenv("EMAIL_BACKEND", default="django.core.mail.backends.smtp.EmailBackend")
+EMAIL_HOST = os.getenv("SMTP_SERVER", default="localhost")
+EMAIL_PORT = os.getenv("SMTP_PORT", default=587)
+EMAIL_HOST_USER = os.getenv("MAIL_USERNAME", default="")
+EMAIL_HOST_PASSWORD = os.getenv("MAIL_PASSWORD", default="")
+EMAIL_USE_TLS = os.getenv("EMAIL_USE_TLS", default=True)
+EMAIL_USE_SSL = os.getenv("EMAIL_USE_SSL", default=False)
+DEFAULT_FROM_EMAIL = os.getenv("EMAIL", default=EMAIL_HOST_USER or "webmaster@localhost")
+
+
+
+# Frontend Url
+FRONTEND_URL = os.getenv("FRONTEND_URL", default="http://localhost:3000")

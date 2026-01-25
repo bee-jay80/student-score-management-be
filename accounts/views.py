@@ -2,13 +2,25 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework_simplejwt.tokens import RefreshToken
-from .serializers import RegisterSerializer, User
 from django.contrib.auth import authenticate
 from rest_framework.exceptions import AuthenticationFailed
-from .utils import (set_jwt_cookies, notify_admins_new_user,
-    send_rejection_email,send_verification_otp, send_approval_email)
 from rest_framework.permissions import IsAuthenticated
-from accounts.permissions import IsAdmin
+
+from .serializers import RegisterSerializer, User
+from .models import EmailOTP
+from .utils.emails import (
+    notify_admins_new_user,
+    send_rejection_email,
+    send_approval_email,
+    send_otp_email,
+)
+
+from .utils.cookies import set_jwt_cookies, set_pending_cookie
+from .utils.verification_session import create_verification_token, verify_verification_token
+
+from .utils.otp import (create_otp, verify_otp)
+from .permissions import IsAdmin, IsTeacher, IsStudent
+
 
 
 
@@ -16,25 +28,43 @@ from accounts.permissions import IsAdmin
 
 class RegisterView(APIView):
     permission_classes = []
+    authentication_classes = []
 
     def post(self, request):
         serializer = RegisterSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         user = serializer.save()
 
-        notify_admins_new_user(user)
-        send_verification_otp(user)
+        # notify_admins_new_user(user)
+        try:
+            otp = create_otp(user, purpose="EMAIL_VERIFICATION")
+            send_otp_email(user, otp)
 
-        return Response(
-            {"detail": "Registration submitted. Await admin approval."},
-            status=201
-        )
+            pending_token = create_verification_token(user.id)
+            response = Response(
+                {
+                    "ststus":"success",
+                    "detail": "Registration submitted, Verify OTP and Await Admin Approval. Await admin approval."
+                },
+                status=201
+            )
+            set_pending_cookie(response, pending_token)
+        except Exception as e:
+            user.delete()
+            return Response(
+                {"detail": "Failed to send OTP email. Please try again."},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+        
+
+        return response
 
 
 
 
 class LoginView(APIView):
     permission_classes = []
+    authentication_classes = []
 
     def post(self, request):
         email = request.data.get("email")
@@ -47,6 +77,7 @@ class LoginView(APIView):
         refresh = RefreshToken.for_user(user)
 
         response = Response({
+            "status":"success",
             "id": user.id,
             "email": user.email,
             "role": user.role,
@@ -109,3 +140,50 @@ class RejectUserView(APIView):
         user.delete()
 
         return Response({"detail": "User rejected and removed"})
+
+
+
+class VerifyOTPView(APIView):
+    permission_classes = []
+    authentication_classes = []
+
+    def post(self, request):
+        otp = request.data.get("otp")
+
+        try:
+            user_id = verify_verification_token(request.COOKIES.get("verification_session"))
+        
+        except Exception:
+            return Response({"detail": "Invalid or expired verification session"}, status=400)
+            
+        user = User.objects.get(id=user_id)
+
+        if verify_otp(user, otp, purpose="EMAIL_VERIFICATION"):
+            user.is_email_verified = True
+            user.save()
+            return Response({"detail": "Email verified successfully"})
+        else:
+            return Response({"detail": "Invalid or expired OTP"}, status=400)
+
+
+class CurrentUserView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        user = request.user
+        return Response({
+            "id": user.id,
+            "email": user.email,
+            "first_name": user.first_name,
+            "last_name": user.last_name,
+            "role": user.role,
+        })
+
+class StudentRoleTestView(APIView):
+    permission_classes = [IsAuthenticated, IsStudent]
+
+    def get(self, request):
+        user = request.user
+        return Response({
+            "message": f"Hello Student {user.first_name} {user.last_name}!"
+        })

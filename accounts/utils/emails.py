@@ -1,22 +1,10 @@
 from django.core.mail import send_mail
-from .models import User
+from accounts.models import User
 from .tokens import email_verification_token
 from django.conf import settings
+from django.core.mail import EmailMultiAlternatives
+from django.template.loader import render_to_string
 
-
-def set_jwt_cookies(response, access, refresh):
-    response.set_cookie(
-        key="access_token",
-        value=access,
-        httponly=True,
-        samesite="Lax",
-    )
-    response.set_cookie(
-        key="refresh_token",
-        value=refresh,
-        httponly=True,
-        samesite="Lax",
-    )
 
 
 def notify_admins_new_user(user):
@@ -60,10 +48,19 @@ def send_reset_password_link_email(user):
     )
 
 
-def send_verification_otp(user, otp):
-    send_mail(
-        subject="Your email verification OTP",
-        message=f"Your OTP for email verification is: {otp}",
-        from_email=None,
-        recipient_list=[user.email],
+
+# OTP MAIL SENDER
+def send_otp_email(user, otp):
+    subject = "Verify your email"
+    html_content = render_to_string(
+        "emails/email_otp_verification.html",
+        {"user": user, "otp": otp}
     )
+
+    email = EmailMultiAlternatives(
+        subject,
+        to=[user.email],
+        from_email=settings.DEFAULT_FROM_EMAIL
+    )
+    email.attach_alternative(html_content, "text/html")
+    email.send()
