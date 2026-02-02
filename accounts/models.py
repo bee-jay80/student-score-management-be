@@ -61,6 +61,7 @@ class EmailOTP(models.Model):
     attempts = models.PositiveSmallIntegerField(default=0)
     is_used = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
+    # email_verification_expires_at = models.DateTimeField(null=True, blank=True)
 
     class Meta:
         indexes = [

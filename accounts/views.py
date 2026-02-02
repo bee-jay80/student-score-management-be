@@ -19,9 +19,9 @@ from .utils.cookies import set_jwt_cookies, set_pending_cookie
 from .utils.verification_session import create_verification_token, verify_verification_token
 
 from .utils.otp import (create_otp, verify_otp)
+from .utils.registration import register_or_resend_otp
 from .permissions import IsAdmin, IsTeacher, IsStudent
-
-
+from notifications.services.notification_create import create_user_approval_notification
 
 
 
@@ -33,31 +33,12 @@ class RegisterView(APIView):
     def post(self, request):
         serializer = RegisterSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        user = serializer.save()
 
-        # notify_admins_new_user(user)
         try:
-            otp = create_otp(user, purpose="EMAIL_VERIFICATION")
-            send_otp_email(user, otp)
-
-            pending_token = create_verification_token(user.id)
-            response = Response(
-                {
-                    "ststus":"success",
-                    "detail": "Registration submitted, Verify OTP and Await Admin Approval. Await admin approval."
-                },
-                status=201
-            )
-            set_pending_cookie(response, pending_token)
-        except Exception as e:
-            user.delete()
-            return Response(
-                {"detail": "Failed to send OTP email. Please try again."},
-                status=status.HTTP_500_INTERNAL_SERVER_ERROR
-            )
-        
-
-        return response
+            user, response = register_or_resend_otp(serializer.validated_data)
+            return response
+        except ValueError as ve:
+            return Response({"detail": str(ve)}, status=status.HTTP_400_BAD_REQUEST)
 
 
 
@@ -142,6 +123,23 @@ class RejectUserView(APIView):
         return Response({"detail": "User rejected and removed"})
 
 
+class ResendOTPView(APIView):
+    permission_classes = []
+    authentication_classes = []
+
+    def post(self, request):
+        try:
+            user_id = verify_verification_token(request.COOKIES.get("verification_session"))
+        
+        except Exception:
+            return Response({"detail": "Invalid or expired verification session"}, status=400)
+            
+
+        user = User.objects.get(id=user_id)
+        otp = create_otp(user, purpose="EMAIL_VERIFICATION")
+        send_otp_email(user, otp)
+
+        return Response({"detail": "OTP resent successfully"})
 
 class VerifyOTPView(APIView):
     permission_classes = []
@@ -157,11 +155,18 @@ class VerifyOTPView(APIView):
             return Response({"detail": "Invalid or expired verification session"}, status=400)
             
         user = User.objects.get(id=user_id)
+        user.is_email_verified = True
 
         if verify_otp(user, otp, purpose="EMAIL_VERIFICATION"):
-            user.is_email_verified = True
+            
             user.save()
-            return Response({"detail": "Email verified successfully"})
+            try:
+                notify_admins_new_user(user)
+                create_user_approval_notification(user, True)
+                return Response({"detail": "Email verified successfully"})
+            except Exception as e:
+                create_user_approval_notification(user, False)
+                return Response({"Error":str(e)})
         else:
             return Response({"detail": "Invalid or expired OTP"}, status=400)
 
@@ -187,3 +192,4 @@ class StudentRoleTestView(APIView):
         return Response({
             "message": f"Hello Student {user.first_name} {user.last_name}!"
         })
+

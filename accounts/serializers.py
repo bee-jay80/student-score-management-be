@@ -5,6 +5,7 @@ from accounts.models import UserRole
 User = get_user_model()
 
 class RegisterSerializer(serializers.ModelSerializer):
+    email = serializers.EmailField(required=True)
     password = serializers.CharField(write_only=True)
 
     class Meta:
@@ -29,6 +30,14 @@ class RegisterSerializer(serializers.ModelSerializer):
             is_email_verified=False,
         )
         return user
+    
+    def validate_email(self, value):
+        if User.objects.filter(email=value).exists():
+            user = User.objects.get(email=value)
+            if user.is_email_verified:
+                raise serializers.ValidationError("Email is already registered.")
+        return value
+
 
 # OTP Verify Serializer
 class OTPVerifySerializer(serializers.Serializer):

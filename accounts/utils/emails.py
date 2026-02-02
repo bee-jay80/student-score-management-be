@@ -8,33 +8,55 @@ from django.template.loader import render_to_string
 
 
 def notify_admins_new_user(user):
-    admins = User.objects.filter(role="ADMIN", is_active=True)
+    admins = User.objects.filter(role="admin", is_active=True)
     emails = [admin.email for admin in admins]
 
-    send_mail(
-        subject="New account approval request",
-        message=f"{user.email} requested access as {user.role}.",
-        from_email=None,
-        recipient_list=emails,
+    # Send email to admins using the email html template
+    subject = "New User Registration Awaiting Approval"
+    html_content = render_to_string(
+        "emails/email_admin_pending_approval.html",
+        {"user": user, "frontend_url": settings.FRONTEND_URL}
     )
+    email = EmailMultiAlternatives(
+        subject,
+        to=emails,
+        from_email=settings.DEFAULT_FROM_EMAIL
+    )
+    email.attach_alternative(html_content, "text/html")
+    email.send()
+
+    
 
 def send_approval_email(user):
     """send email that confirms the user as been approved by admin"""
-    send_mail(
-        subject="Your account has been approved",
-        message="Your account has been approved by the admin. You can now log in.",
-        from_email=None,
-        recipient_list=[user.email],
+    # Using the email template
+    subject = "Your account has been approved"
+    html_content = render_to_string(
+        "emails/email_user_approval.html",
+        {"user": user, "frontend_url": settings.FRONTEND_URL}
     )
+    email = EmailMultiAlternatives(
+        subject,
+        to=[user.email],
+        from_email=settings.DEFAULT_FROM_EMAIL  
+    )
+    email.attach_alternative(html_content, "text/html")
+    email.send()
 
 def send_rejection_email(user):
     """send email that informs the user that their account has been rejected by admin"""
-    send_mail(
-        subject="Your account request has been rejected",
-        message="We regret to inform you that your account request has been rejected by the admin.",
-        from_email=None,
-        recipient_list=[user.email],
+    subject = "Your account registration has been rejected"
+    html_content = render_to_string(
+        "emails/email_user_rejection.html",
+        {"user": user}
     )
+    email = EmailMultiAlternatives(
+        subject,
+        to=[user.email],
+        from_email=settings.DEFAULT_FROM_EMAIL  
+    )
+    email.attach_alternative(html_content, "text/html")
+    email.send()
 
 def send_reset_password_link_email(user):
     token = email_verification_token.make_token(user)
