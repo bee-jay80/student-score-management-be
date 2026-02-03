@@ -4,18 +4,23 @@ from django.db import models
 from courses.models import Course
 
 class Teacher(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    gender_choice = (
+        ("male", "Male"),
+        ("female", "Female"),
+        ("others", "Others")
+    )
 
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     user = models.OneToOneField(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
         related_name="teacher_profile"
     )
 
-    phone_number = models.CharField(max_length=15)
-    assigned_courses = models.ManyToManyField(Course, blank=True)
-
-    created_at = models.DateTimeField(auto_now_add=True)
+    department = models.CharField(max_length=100)
+    phone_number = models.CharField(max_length=20)
+    address = models.TextField()
+    gender = models.CharField(max_length=10, choices=gender_choice)
 
     def __str__(self):
-        return f"{self.user.first_name} {self.user.last_name}"
+        return self.user.email    
