@@ -34,14 +34,22 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'rest_framework_simplejwt',
     'rest_framework_simplejwt.token_blacklist',
+    'cloudinary',
+    'corsheaders',
 
     'accounts',
-    'notifications'
+    'notifications',
+    'courses',
+    'students',
+    'grades',
+    'teachers',
+    'forgot_password'
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -181,4 +189,31 @@ DEFAULT_FROM_EMAIL = os.getenv("EMAIL", default=EMAIL_HOST_USER or "webmaster@lo
 
 
 # Frontend Url
-FRONTEND_URL = os.getenv("FRONTEND_URL", default="http://localhost:3000")
+FRONTEND_URL = os.getenv("FRONTEND_URL", default="http://localhost:5173")
+
+# Cloudinary Configuration
+import cloudinary
+cloudinary.config(
+    cloud_name=os.getenv("CLOUDINARY_CLOUD_NAME"),
+    api_key=os.getenv("CLOUDINARY_API_KEY"),
+    api_secret=os.getenv("CLOUDINARY_API_SECRET"),
+)
+
+
+# CORS Configuration
+CORS_ALLOWED_ORIGINS = [
+    'http://localhost:5173'
+]
+
+CORS_ALLOW_CREDENTIALS = True
+
+
+CSRF_TRUSTED_ORIGINS = [
+    "http://localhost:5173",
+]
+
+
+# SESSION_COOKIE_SAMESITE = "Lax"
+# CSRF_COOKIE_SAMESITE = "Lax"
+# SESSION_COOKIE_SECURE = False
+# CSRF_COOKIE_SECURE = False

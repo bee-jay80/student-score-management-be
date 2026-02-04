@@ -4,6 +4,9 @@ import uuid
 from .managers import UserManager
 from django.conf import settings
 
+# image upload using cloudinary storing the image url in the model
+import cloudinary.models
+
 
 
 
@@ -67,3 +70,13 @@ class EmailOTP(models.Model):
         indexes = [
             models.Index(fields=["user", "purpose"]),
         ]
+
+class ImageUpload(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    image = cloudinary.models.CloudinaryField('image') 
+    uploaded_at = models.DateTimeField(auto_now_add=True)
+    uploaded_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Image uploaded by {self.user.email} at {self.uploaded_at}"

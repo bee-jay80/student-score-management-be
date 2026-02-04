@@ -1,4 +1,5 @@
 from rest_framework.views import APIView
+from rest_framework.generics import GenericAPIView
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -6,8 +7,8 @@ from django.contrib.auth import authenticate
 from rest_framework.exceptions import AuthenticationFailed
 from rest_framework.permissions import IsAuthenticated
 
-from .serializers import RegisterSerializer, User
-from .models import EmailOTP
+from .serializers import RegisterSerializer, User, ImageUploadSerializer
+from .models import EmailOTP, ImageUpload
 from .utils.emails import (
     notify_admins_new_user,
     send_rejection_email,
@@ -80,7 +81,7 @@ class RefreshView(APIView):
         access = refresh.access_token
 
         response = Response({"access": str(access)})
-        response.set_cookie("access_token", str(access), httponly=True)
+        set_jwt_cookies(response, str(access), str(refresh))
 
         return response
 
@@ -193,3 +194,49 @@ class StudentRoleTestView(APIView):
             "message": f"Hello Student {user.first_name} {user.last_name}!"
         })
 
+
+class ImageUploadView(GenericAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = ImageUploadSerializer
+
+    def post(self, request):
+        serializer = self.get_serializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save(user=request.user)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+class ImageUploadDetailView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, upload_id):
+        try:
+            upload = ImageUpload.objects.get(id=upload_id, user=request.user)
+        except ImageUpload.DoesNotExist:
+            return Response({"detail": "Image upload not found."}, status=status.HTTP_404_NOT_FOUND)
+        
+        serializer = ImageUploadSerializer(upload)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def put(self, request, upload_id):
+        try:
+            upload = ImageUpload.objects.get(id=upload_id, user=request.user)
+        except ImageUpload.DoesNotExist:
+            return Response({"detail": "Image upload not found."}, status=status.HTTP_404_NOT_FOUND)
+        
+        serializer = ImageUploadSerializer(upload, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, upload_id):
+        try:
+            upload = ImageUpload.objects.get(id=upload_id, user=request.user)
+        except ImageUpload.DoesNotExist:
+            return Response({"detail": "Image upload not found."}, status=status.HTTP_404_NOT_FOUND)
+
+        upload.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+    

@@ -6,7 +6,6 @@ from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
 
 
-
 def notify_admins_new_user(user):
     admins = User.objects.filter(role="admin", is_active=True)
     emails = [admin.email for admin in admins]

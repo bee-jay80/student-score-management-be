@@ -1,0 +1,2979 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Students Grade Management Dashboard - API Documentation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 140, 0, 0.5);
+            border-radius: 5px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 140, 0, 0.8);
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a0a00 100%);
+            color: #e0e0e0;
+            overflow-x: hidden;
+        }
+
+        /* Animated Background */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(ellipse at 20% 50%, rgba(255, 140, 0, 0.05) 0%, transparent 50%),
+                        radial-gradient(ellipse at 80% 80%, rgba(255, 140, 0, 0.03) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        /* Navigation */
+        nav {
+            position: sticky;
+            top: 0;
+            background: rgba(10, 10, 10, 0.8);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 140, 0, 0.1);
+            padding: 0 2rem;
+            z-index: 100;
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
+        }
+
+        nav .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #ff8c00, #ffaa33);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: 1px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: #e0e0e0;
+            text-decoration: none;
+            font-size: 0.95rem;
+            transition: color 0.3s ease;
+            position: relative;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(135deg, #ff8c00, #ffaa33);
+            transition: width 0.3s ease;
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        .nav-links a:hover {
+            color: #ff8c00;
+        }
+
+        /* Main Container */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        /* Hero Section */
+        .hero {
+            padding: 6rem 2rem;
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #ff8c00, #ffaa33);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 800;
+            letter-spacing: -1px;
+        }
+
+        .hero p {
+            font-size: 1.3rem;
+            color: #b0b0b0;
+            margin-bottom: 2rem;
+        }
+
+        .hero-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .stat-card {
+            background: rgba(255, 140, 0, 0.05);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 140, 0, 0.2);
+            padding: 2rem;
+            border-radius: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            background: rgba(255, 140, 0, 0.1);
+            border-color: rgba(255, 140, 0, 0.4);
+            transform: translateY(-5px);
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            color: #ff8c00;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: #b0b0b0;
+            font-size: 0.95rem;
+        }
+
+        /* Glassmorphism Cards */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border: 1px solid rgba(255, 140, 0, 0.15);
+            border-radius: 20px;
+            padding: 2.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .glass-card:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 140, 0, 0.3);
+            transform: translateY(-3px);
+            box-shadow: 0 12px 48px 0 rgba(255, 140, 0, 0.15);
+        }
+
+        /* Section Titles */
+        h2 {
+            font-size: 2.5rem;
+            margin-bottom: 2rem;
+            background: linear-gradient(135deg, #ff8c00, #ffaa33);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 700;
+        }
+
+        h3 {
+            font-size: 1.8rem;
+            margin: 1.5rem 0 1rem 0;
+            color: #ff8c00;
+            font-weight: 600;
+        }
+
+        h4 {
+            font-size: 1.3rem;
+            margin: 1.2rem 0 0.8rem 0;
+            color: #ffaa33;
+            font-weight: 600;
+        }
+
+        /* Code Blocks */
+        .code-block {
+            background: rgba(0, 0, 0, 0.6);
+            border: 1px solid rgba(255, 140, 0, 0.2);
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+            overflow-x: auto;
+            position: relative;
+        }
+
+        .code-block::before {
+            content: attr(data-language);
+            position: absolute;
+            top: 5px;
+            right: 15px;
+            font-size: 0.75rem;
+            color: #ff8c00;
+            text-transform: uppercase;
+            font-weight: 600;
+            letter-spacing: 1px;
+        }
+
+        .code-block code {
+            color: #00ff88;
+            font-family: 'Courier New', monospace;
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        .code-block .key {
+            color: #ff8c00;
+        }
+
+        .code-block .string {
+            color: #00d4ff;
+        }
+
+        .code-block .number {
+            color: #ffaa33;
+        }
+
+        /* Tables */
+        .table-container {
+            overflow-x: auto;
+            margin: 1.5rem 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 140, 0, 0.2);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        thead {
+            background: rgba(255, 140, 0, 0.1);
+            border-bottom: 2px solid rgba(255, 140, 0, 0.3);
+        }
+
+        th {
+            padding: 1rem;
+            text-align: left;
+            color: #ff8c00;
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        td {
+            padding: 1rem;
+            border-bottom: 1px solid rgba(255, 140, 0, 0.1);
+            color: #d0d0d0;
+        }
+
+        tbody tr:hover {
+            background: rgba(255, 140, 0, 0.05);
+        }
+
+        /* API Endpoint Cards */
+        .endpoint-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 140, 0, 0.2);
+            border-radius: 15px;
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .endpoint-card:hover {
+            background: rgba(255, 255, 255, 0.06);
+            border-color: rgba(255, 140, 0, 0.4);
+        }
+
+        .endpoint-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .method-badge {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            letter-spacing: 0.5px;
+            min-width: 60px;
+            text-align: center;
+        }
+
+        .method-post {
+            background: rgba(255, 140, 0, 0.3);
+            color: #ff8c00;
+            border: 1px solid rgba(255, 140, 0, 0.5);
+        }
+
+        .method-get {
+            background: rgba(0, 200, 100, 0.3);
+            color: #00ff88;
+            border: 1px solid rgba(0, 255, 100, 0.5);
+        }
+
+        .method-put {
+            background: rgba(100, 150, 255, 0.3);
+            color: #6496ff;
+            border: 1px solid rgba(100, 150, 255, 0.5);
+        }
+
+        .method-delete {
+            background: rgba(255, 80, 80, 0.3);
+            color: #ff6b6b;
+            border: 1px solid rgba(255, 80, 80, 0.5);
+        }
+
+        .endpoint-path {
+            color: #ffaa33;
+            font-family: 'Courier New', monospace;
+            font-size: 1.1rem;
+            flex: 1;
+        }
+
+        /* Lists */
+        ul, ol {
+            margin: 1rem 0 1rem 2rem;
+            color: #d0d0d0;
+        }
+
+        li {
+            margin: 0.5rem 0;
+            line-height: 1.8;
+        }
+
+        /* Badges and Tags */
+        .badge {
+            display: inline-block;
+            padding: 0.4rem 0.8rem;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin: 0.2rem 0.3rem 0.2rem 0;
+        }
+
+        .badge-required {
+            background: rgba(255, 80, 80, 0.2);
+            color: #ff8888;
+            border: 1px solid rgba(255, 80, 80, 0.4);
+        }
+
+        .badge-optional {
+            background: rgba(100, 150, 255, 0.2);
+            color: #8ab4ff;
+            border: 1px solid rgba(100, 150, 255, 0.4);
+        }
+
+        .badge-auth {
+            background: rgba(0, 200, 100, 0.2);
+            color: #00ff88;
+            border: 1px solid rgba(0, 255, 100, 0.4);
+        }
+
+        .badge-public {
+            background: rgba(255, 200, 100, 0.2);
+            color: #ffaa33;
+            border: 1px solid rgba(255, 140, 0, 0.4);
+        }
+
+        /* Side by side */
+        .side-by-side {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+
+        @media (max-width: 768px) {
+            .side-by-side {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Highlights */
+        .highlight {
+            background: rgba(255, 140, 0, 0.1);
+            border-left: 4px solid #ff8c00;
+            padding: 1rem;
+            border-radius: 5px;
+            margin: 1rem 0;
+        }
+
+        .highlight.info {
+            background: rgba(0, 150, 255, 0.1);
+            border-left-color: #0096ff;
+        }
+
+        .highlight.success {
+            background: rgba(0, 200, 100, 0.1);
+            border-left-color: #00ff88;
+        }
+
+        .highlight.warning {
+            background: rgba(255, 200, 0, 0.1);
+            border-left-color: #ffc800;
+        }
+
+        /* Sections */
+        section {
+            margin-bottom: 4rem;
+        }
+
+        section:nth-child(odd) .glass-card {
+            background: rgba(255, 140, 0, 0.03);
+        }
+
+        /* Table of Contents */
+        .toc {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 140, 0, 0.2);
+            border-radius: 15px;
+            padding: 2rem;
+            position: sticky;
+            top: 80px;
+            max-height: calc(100vh - 100px);
+            overflow-y: auto;
+        }
+
+        .toc h3 {
+            margin-top: 0;
+            font-size: 1.3rem;
+        }
+
+        .toc a {
+            display: block;
+            color: #d0d0d0;
+            text-decoration: none;
+            padding: 0.5rem 0;
+            border-left: 3px solid transparent;
+            padding-left: 1rem;
+            transition: all 0.3s ease;
+            margin: 0.3rem 0;
+        }
+
+        .toc a:hover {
+            color: #ff8c00;
+            border-left-color: #ff8c00;
+            padding-left: 1.3rem;
+        }
+
+        .toc-nested {
+            margin-left: 1rem;
+        }
+
+        .toc-nested a {
+            font-size: 0.9rem;
+        }
+
+        /* Main layout with sidebar */
+        .doc-layout {
+            display: grid;
+            grid-template-columns: 250px 1fr;
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        @media (max-width: 1024px) {
+            .doc-layout {
+                grid-template-columns: 1fr;
+            }
+
+            .toc {
+                position: static;
+                max-height: none;
+            }
+        }
+
+        /* Permission chips */
+        .permissions {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            margin: 1rem 0;
+        }
+
+        .permission-chip {
+            background: rgba(255, 140, 0, 0.15);
+            border: 1px solid rgba(255, 140, 0, 0.3);
+            color: #ff8c00;
+            padding: 0.4rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .permission-chip.admin {
+            background: rgba(255, 80, 80, 0.15);
+            border-color: rgba(255, 80, 80, 0.3);
+            color: #ff8888;
+        }
+
+        .permission-chip.teacher {
+            background: rgba(100, 150, 255, 0.15);
+            border-color: rgba(100, 150, 255, 0.3);
+            color: #8ab4ff;
+        }
+
+        .permission-chip.student {
+            background: rgba(0, 200, 100, 0.15);
+            border-color: rgba(0, 200, 100, 0.3);
+            color: #00ff88;
+        }
+
+        .permission-chip.public {
+            background: rgba(255, 200, 100, 0.15);
+            border-color: rgba(255, 140, 0, 0.3);
+            color: #ffaa33;
+        }
+
+        /* Footer */
+        footer {
+            background: rgba(10, 10, 10, 0.8);
+            backdrop-filter: blur(20px);
+            border-top: 1px solid rgba(255, 140, 0, 0.1);
+            padding: 3rem 2rem 2rem;
+            text-align: center;
+            color: #888;
+            margin-top: 6rem;
+        }
+
+        footer p {
+            margin: 0.5rem 0;
+        }
+
+        /* Spacing */
+        .mt-1 { margin-top: 0.5rem; }
+        .mt-2 { margin-top: 1rem; }
+        .mt-3 { margin-top: 1.5rem; }
+        .mt-4 { margin-top: 2rem; }
+
+        .mb-1 { margin-bottom: 0.5rem; }
+        .mb-2 { margin-bottom: 1rem; }
+        .mb-3 { margin-bottom: 1.5rem; }
+        .mb-4 { margin-bottom: 2rem; }
+
+        /* Transitions */
+        * {
+            transition: background 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+
+            .nav-links {
+                gap: 1rem;
+            }
+
+            .hero-stats {
+                grid-template-columns: 1fr;
+            }
+
+            .side-by-side {
+                grid-template-columns: 1fr;
+            }
+
+            .endpoint-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .endpoint-path {
+                width: 100%;
+            }
+        }
+
+        /* Animation */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .glass-card {
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        /* Text utilities */
+        .text-muted {
+            color: #888;
+        }
+
+        .text-success {
+            color: #00ff88;
+        }
+
+        .text-error {
+            color: #ff8888;
+        }
+
+        .text-warning {
+            color: #ffaa33;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav>
+        <div class="container">
+            <div class="logo">📚 SGM Dashboard</div>
+            <div class="nav-links">
+                <a href="#overview">Overview</a>
+                <a href="#authentication">Authentication</a>
+                <a href="#endpoints">Endpoints</a>
+                <a href="#permissions">Permissions</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container mt-4">
+        <!-- Hero Section -->
+        <section class="hero">
+            <h1>Students Grade Management Dashboard</h1>
+            <p>Complete API Documentation for Frontend Developers</p>
+            <div class="hero-stats">
+                <div class="stat-card">
+                    <div class="stat-number">8</div>
+                    <div class="stat-label">API Endpoints</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">3</div>
+                    <div class="stat-label">User Roles</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">JWT</div>
+                    <div class="stat-label">Authentication</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">OTP</div>
+                    <div class="stat-label">Email Verification</div>
+                </div>
+            </div>
+        </section>
+
+        <div class="doc-layout">
+            <!-- Table of Contents Sidebar -->
+            <aside>
+                <div class="toc">
+                    <h3>📑 Quick Navigation</h3>
+                    <a href="#overview">Getting Started</a>
+                    <a href="#authentication">Authentication Flow</a>
+                    <div class="toc-nested">
+                        <a href="#auth-register">Register</a>
+                        <a href="#auth-otp">OTP & Verification</a>
+                        <a href="#forgot-password">Forgot Password</a>
+                        <a href="#auth-login">Login</a>
+                        <a href="#auth-cookies">Cookies</a>
+                    </div>
+                    <a href="#endpoints">API Endpoints</a>
+                    <div class="toc-nested">
+                        <a href="#ep-register">POST /register</a>
+                        <a href="#ep-verify-otp">POST /verify-otp</a>
+                        <a href="#ep-resend-otp">POST /resend-otp</a>
+                            <a href="#ep-forgot-password-request">POST /forgot-password/request-otp</a>
+                            <a href="#ep-forgot-password-verify">POST /forgot-password/verify-otp</a>
+                            <a href="#ep-forgot-password-reset">POST /forgot-password/reset-password</a>
+                        <a href="#ep-login">POST /login</a>
+                        <a href="#ep-refresh">POST /refresh</a>
+                        <a href="#ep-logout">POST /logout</a>
+                        <a href="#ep-me">GET /me</a>
+                        <a href="#ep-test">GET /student-test</a>
+                    </div>
+                    <a href="#permissions">Permissions</a>
+                    <a href="#responses">Response Codes</a>
+                    <a href="#emails">Email Templates</a>
+                    <a href="#configuration">Configuration</a>
+                </div>
+            </aside>
+
+            <!-- Main Documentation -->
+            <main>
+                <!-- Overview Section -->
+                <section id="overview">
+                    <h2>🚀 Getting Started</h2>
+                    
+                    <div class="glass-card">
+                        <h3>Project Overview</h3>
+                        <p>The Students Grade Management Dashboard is a comprehensive Django REST Framework API designed for managing student grades, courses, and user authentication. It provides role-based access control with three user types: Students, Teachers, and Admins.</p>
+                        
+                        <h4>Key Features:</h4>
+                        <ul>
+                            <li><strong>Email-based Authentication:</strong> Users register with email instead of username</li>
+                            <li><strong>OTP Verification:</strong> Email verification using one-time passwords</li>
+                            <li><strong>Admin Approval:</strong> New accounts require admin approval before activation</li>
+                            <li><strong>Role-based Access Control:</strong> Student, Teacher, and Admin roles with specific permissions</li>
+                            <li><strong>JWT Tokens:</strong> Secure token-based authentication with refresh tokens</li>
+                            <li><strong>HttpOnly Cookies:</strong> Tokens stored securely in HttpOnly cookies</li>
+                            <li><strong>Email Notifications:</strong> Automated email notifications for various events</li>
+                        </ul>
+                    </div>
+
+                    <div class="glass-card">
+                        <h3>Technology Stack</h3>
+                        <div class="side-by-side">
+                            <div>
+                                <h4>Backend:</h4>
+                                <ul>
+                                    <li>Django 6.0</li>
+                                    <li>Django REST Framework</li>
+                                    <li>JWT (SimpleJWT)</li>
+                                    <li>SQLite3 Database</li>
+                                </ul>
+                            </div>
+                            <div>
+                                <h4>Frontend Requirements:</h4>
+                                <ul>
+                                    <li>REST API Client (Fetch API / Axios)</li>
+                                    <li>Cookie Management</li>
+                                    <li>Token Storage</li>
+                                    <li>User State Management</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="glass-card">
+                        <h3>Base URL</h3>
+                        <p>All API endpoints are relative to:</p>
+                        <div class="code-block" data-language="URL">
+                            <code>http://localhost:8000/api/accounts/</code>
+                        </div>
+                        <p class="text-muted mt-2">Replace with your deployed server URL in production.</p>
+                    </div>
+                </section>
+
+                <!-- Authentication Section -->
+                <section id="authentication">
+                    <h2>🔐 Authentication & Authorization</h2>
+                    
+                    <div class="glass-card">
+                        <h3>Overview</h3>
+                        <p>The authentication system uses a multi-step process to ensure secure account creation and verification:</p>
+                        <ol>
+                            <li><strong>Registration:</strong> User submits registration data</li>
+                            <li><strong>OTP Generation:</strong> System generates and sends OTP via email</li>
+                            <li><strong>OTP Verification:</strong> User verifies email with OTP</li>
+                            <li><strong>Admin Approval:</strong> Admin approves the new account</li>
+                            <li><strong>Account Activation:</strong> User can now login</li>
+                        </ol>
+                    </div>
+
+                    <!-- Registration Details -->
+                    <div class="glass-card" id="auth-register">
+                        <h3>Step 1: Registration Process</h3>
+                        
+                        <h4>What Happens:</h4>
+                        <ul>
+                            <li>User submits: email, first_name, last_name, password</li>
+                            <li>System checks if email already exists and is verified</li>
+                            <li>If new user → creates user account (inactive, email not verified)</li>
+                            <li>If user exists but unverified → updates existing record</li>
+                            <li>Generates OTP and sends via email</li>
+                            <li>Sets verification_session cookie (15 minutes validity)</li>
+                            <li>Returns success response with status 201</li>
+                        </ul>
+
+                        <h4>Key Validations:</h4>
+                        <ul>
+                            <li>Email must be unique or unverified</li>
+                            <li>First name and last name are required</li>
+                            <li>Password must meet Django's security requirements</li>
+                            <li>If email is already verified → returns 400 error</li>
+                        </ul>
+
+                        <div class="highlight info">
+                            <strong>Note:</strong> The verification_session cookie is HttpOnly, Lax SameSite, and expires in 15 minutes. It's used to identify the user during OTP verification without exposing user ID in the request body.
+                        </div>
+                    </div>
+
+                    <!-- OTP Details -->
+                    <div class="glass-card" id="auth-otp">
+                        <h3>Step 2: OTP & Email Verification</h3>
+                        
+                        <h4>OTP System Details:</h4>
+                        <ul>
+                            <li><strong>Length:</strong> 6 digits</li>
+                            <li><strong>Expiry:</strong> 10 minutes (from creation)</li>
+                            <li><strong>Max Attempts:</strong> 5 failed attempts</li>
+                            <li><strong>Storage:</strong> Hashed using Django's password hasher for security</li>
+                            <li><strong>Reusability:</strong> Once used, OTP is marked as used and cannot be reused</li>
+                        </ul>
+
+                        <h4>OTP Email Template:</h4>
+                        <p>The system sends an HTML email containing:</p>
+                        <ul>
+                            <li>User's first name greeting</li>
+                            <li>The 6-digit OTP in large, readable format</li>
+                            <li>Expiry time information (10 minutes)</li>
+                            <li>Instructions to enter OTP in the app</li>
+                            <li>Security notice about never sharing the OTP</li>
+                        </ul>
+
+                        <div class="highlight warning">
+                            <strong>Important:</strong> OTP must be transmitted via HTTPS. Frontend should never log the OTP for security reasons.
+                        </div>
+                    </div>
+
+                    <!-- Verification Session -->
+                    <div class="glass-card" id="auth-cookies">
+                        <h3>Step 3: Cookies & Tokens</h3>
+                        
+                        <h4>Verification Session Cookie</h4>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Property</th>
+                                    <th>Value</th>
+                                    <th>Description</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>Cookie Name</strong></td>
+                                    <td>verification_session</td>
+                                    <td>Used during registration and OTP verification</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Value</strong></td>
+                                    <td>Signed verification token</td>
+                                    <td>Contains encrypted user ID with timestamp</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>HttpOnly</strong></td>
+                                    <td>✓ Yes</td>
+                                    <td>Cannot be accessed via JavaScript (secure)</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>SameSite</strong></td>
+                                    <td>Lax</td>
+                                    <td>CSRF protection</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Expires</strong></td>
+                                    <td>15 minutes</td>
+                                    <td>User must verify email within 15 mins</td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <h4>JWT Tokens (After Login)</h4>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Token</th>
+                                    <th>Lifetime</th>
+                                    <th>Purpose</th>
+                                    <th>Storage</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>access_token</strong></td>
+                                    <td>15 minutes</td>
+                                    <td>Authenticates API requests</td>
+                                    <td>HttpOnly Cookie</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>refresh_token</strong></td>
+                                    <td>7 days</td>
+                                    <td>Obtains new access_token</td>
+                                    <td>HttpOnly Cookie</td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <div class="highlight success">
+                            <strong>Security:</strong> Tokens are stored in HttpOnly cookies. Frontend cannot access them directly - browser automatically includes them in requests. This prevents XSS attacks.
+                        </div>
+                    </div>
+
+                    <!-- Login Details -->
+                    <div class="glass-card" id="auth-login">
+                        <h3>Step 4: Login</h3>
+                        
+                        <h4>Prerequisites for Login:</h4>
+                        <ul>
+                            <li>✓ User account must exist</li>
+                            <li>✓ Email must be verified (is_email_verified = True)</li>
+                            <li>✓ Account must be approved by admin (is_active = True)</li>
+                        </ul>
+
+                        <h4>Login Response:</h4>
+                        <p>Upon successful login, the API returns:</p>
+                        <ul>
+                            <li>User ID (UUID format)</li>
+                            <li>Email address</li>
+                            <li>User role (student, teacher, admin)</li>
+                            <li>Status message</li>
+                            <li>HTTP 200 status</li>
+                        </ul>
+                        <p>Additionally, two HttpOnly cookies are set automatically:</p>
+                        <ul>
+                            <li>access_token (15 min validity)</li>
+                            <li>refresh_token (7 days validity)</li>
+                        </ul>
+
+                        <div class="highlight info">
+                            <strong>Frontend Implementation:</strong> After login, store the user data (id, email, role) in your application state. The tokens are managed by the browser automatically. Use the user data to show user-specific content and implement role-based navigation.
+                        </div>
+                    </div>
+
+                    <!-- Token Refresh -->
+                    <div class="glass-card">
+                        <h3>Token Refresh Flow</h3>
+                        
+                        <h4>Why Refresh Tokens?</h4>
+                        <p>Access tokens expire in 15 minutes for security. When expired, use the refresh token to get a new access token without requiring the user to login again.</p>
+
+                        <h4>How It Works:</h4>
+                        <ol>
+                            <li>Frontend makes a request with an expired access token</li>
+                            <li>API returns 401 Unauthorized</li>
+                            <li>Frontend calls the /refresh endpoint</li>
+                            <li>Browser automatically includes refresh token cookie</li>
+                            <li>API validates refresh token and returns new access token</li>
+                            <li>New access token is set in HttpOnly cookie</li>
+                            <li>Frontend retries original request with new token</li>
+                        </ol>
+
+                        <div class="highlight warning">
+                            <strong>Implementation Note:</strong> Your frontend should implement an interceptor (in Axios/Fetch) to automatically handle token refresh when receiving a 401 response. This provides seamless user experience.
+                        </div>
+                    </div>
+                </section>
+
+                <!-- API Endpoints Section -->
+                <section id="endpoints">
+                    <h2>📡 API Endpoints</h2>
+
+                    <!-- Register Endpoint -->
+                    <div class="endpoint-card" id="ep-register">
+                        <div class="endpoint-header">
+                            <span class="method-badge method-post">POST</span>
+                            <span class="endpoint-path">/register/</span>
+                            <span class="badge badge-public">Public</span>
+                        </div>
+                        
+                        <h4>Register New Account</h4>
+                        <p>Initiates user registration. Creates account and sends OTP verification email.</p>
+
+                        <h4>Request Body:</h4>
+                        <div class="code-block" data-language="JSON">
+                            <code>{
+    <span class="key">"email"</span>: <span class="string">"johnbright081132@gmail.com"</span>,
+    <span class="key">"first_name"</span>: <span class="string">"John"</span>,
+    <span class="key">"last_name"</span>: <span class="string">"Doe"</span>,
+    <span class="key">"password"</span>: <span class="string">"SecurePassword123!"</span>
+}</code>
+                        </div>
+
+                        <h4>Request Parameters:</h4>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Field</th>
+                                    <th>Type</th>
+                                    <th>Status</th>
+                                    <th>Description</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>email</strong></td>
+                                    <td>string (email)</td>
+                                    <td><span class="badge badge-required">Required</span></td>
+                                    <td>User's email address. Must be unique and valid email format</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>first_name</strong></td>
+                                    <td>string</td>
+                                    <td><span class="badge badge-required">Required</span></td>
+                                    <td>User's first name. Max 150 characters</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>last_name</strong></td>
+                                    <td>string</td>
+                                    <td><span class="badge badge-required">Required</span></td>
+                                    <td>User's last name. Max 150 characters</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>password</strong></td>
+                                    <td>string</td>
+                                    <td><span class="badge badge-required">Required</span></td>
+                                    <td>Account password. Must be at least 8 characters and not entirely numeric</td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <h4>Success Response (201 Created):</h4>
+                        <div class="code-block" data-language="JSON">
+                            <code>{
+    <span class="key">"ststus"</span>: <span class="string">"success"</span>,
+    <span class="key">"detail"</span>: <span class="string">"Registration submitted, Verify OTP and Await Admin Approval."</span>
+}</code>
+                        </div>
+
+                        <h4>Response Cookies:</h4>
+                        <ul>
+                            <li><strong>verification_session:</strong> Signed token containing user ID (15 min expiry)</li>
+                        </ul>
+
+                        <h4>Error Responses:</h4>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Status Code</th>
+                                    <th>Response</th>
+                                    <th>Cause</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>400</strong></td>
+                                    <td>{ "detail": "Email is required" }</td>
+                                    <td>Email field is missing or invalid</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>400</strong></td>
+                                    <td>{ "detail": "Email already registered" }</td>
+                                    <td>Email exists and is verified</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>500</strong></td>
+                                    <td>{ "detail": "Failed to send OTP email" }</td>
+                                    <td>Email service error</td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <h4>Frontend Implementation Example:</h4>
+                        <div class="code-block" data-language="JavaScript">
+                            <code>const registerUser = async (userData) => {
+    try {
+        const response = await fetch(
+            'http://localhost:8000/api/accounts/register/',
+            {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'include', // Important: include cookies
+                body: JSON.stringify(userData)
+            }
+        );
+        
+        if (response.status === 201) {
+            // Successfully registered
+            // Next: navigate to OTP verification page
+            console.log('Check email for OTP');
+        } else {
+            const error = await response.json();
+            console.error('Registration failed:', error);
+        }
+    } catch (err) {
+        console.error('Network error:', err);
+    }
+};</code>
+                        </div>
+                    </div>
+
+                    <!-- Verify OTP Endpoint -->
+                    <div class="endpoint-card" id="ep-verify-otp">
+                        <div class="endpoint-header">
+                            <span class="method-badge method-post">POST</span>
+                            <span class="endpoint-path">/verify-otp/</span>
+                            <span class="badge badge-public">Public</span>
+                        </div>
+                        
+                        <h4>Verify Email with OTP</h4>
+                        <p>Verifies user's email address using the OTP received via email. After successful verification, account awaits admin approval.</p>
+
+                        <h4>Requirements:</h4>
+                        <ul>
+                            <li>✓ Must have valid verification_session cookie</li>
+                            <li>✓ OTP must match the one sent to email</li>
+                            <li>✓ OTP must not be expired (10 min from creation)</li>
+                            <li>✓ Not exceed 5 failed attempts</li>
+                        </ul>
+
+                        <h4>Request Body:</h4>
+                        <div class="code-block" data-language="JSON">
+                            <code>{
+    <span class="key">"otp"</span>: <span class="string">"123456"</span>
+}</code>
+                        </div>
+
+                        <h4>Request Parameters:</h4>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Field</th>
+                                    <th>Type</th>
+                                    <th>Status</th>
+                                    <th>Description</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>otp</strong></td>
+                                    <td>string</td>
+                                    <td><span class="badge badge-required">Required</span></td>
+                                    <td>6-digit OTP from email. Numeric string</td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <h4>Success Response (200 OK):</h4>
+                        <div class="code-block" data-language="JSON">
+                            <code>{
+    <span class="key">"detail"</span>: <span class="string">"Email verified successfully"</span>
+}</code>
+                        </div>
+
+                        <h4>What Happens After Success:</h4>
+                        <ol>
+                            <li>User's is_email_verified flag is set to True</li>
+                            <li>Verification_session cookie is cleared</li>
+                            <li>Admin receives notification of new user awaiting approval</li>
+                            <li>User sees "Awaiting Admin Approval" message</li>
+                            <li>Once admin approves, user can login</li>
+                        </ol>
+
+                        <h4>Error Responses:</h4>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Status Code</th>
+                                    <th>Response</th>
+                                    <th>Cause</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>400</strong></td>
+                                    <td>{ "detail": "Invalid or expired verification session" }</td>
+                                    <td>verification_session cookie missing or expired</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>400</strong></td>
+                                    <td>{ "detail": "Invalid OTP" }</td>
+                                    <td>OTP doesn't match (attempt count increases)</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>400</strong></td>
+                                    <td>{ "detail": "OTP expired" }</td>
+                                    <td>OTP is older than 10 minutes</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>400</strong></td>
+                                    <td>{ "detail": "Too many attempts" }</td>
+                                    <td>5 failed attempts exceeded</td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <h4>Frontend Implementation:</h4>
+                        <div class="code-block" data-language="JavaScript">
+                            <code>const verifyOTP = async (otp) => {
+    try {
+        const response = await fetch(
+            'http://localhost:8000/api/accounts/verify-otp/',
+            {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'include', // Includes verification_session cookie
+                body: JSON.stringify({ otp })
+            }
+        );
+        
+        if (response.status === 200) {
+            // Email verified successfully
+            console.log('Email verified! Awaiting admin approval');
+            // Navigate to "pending approval" or "login" page
+        } else if (response.status === 400) {
+            const error = await response.json();
+            console.error('Verification failed:', error.detail);
+        }
+    } catch (err) {
+        console.error('Error:', err);
+    }
+};</code>
+                        </div>
+                    </div>
+
+                    <!-- Resend OTP Endpoint -->
+                    <div class="endpoint-card" id="ep-resend-otp">
+                        <div class="endpoint-header">
+                            <span class="method-badge method-post">POST</span>
+                            <span class="endpoint-path">/resend-otp/</span>
+                            <span class="badge badge-public">Public</span>
+                        </div>
+                        
+                        <h4>Resend OTP Email</h4>
+                        <p>Generates and sends a new OTP if the previous one expired or user didn't receive it.</p>
+
+                        <h4>Requirements:</h4>
+                        <ul>
+                            <li>✓ Must have valid verification_session cookie</li>
+                        </ul>
+
+                        <h4>Request Body:</h4>
+                        <p class="text-muted">No body required - uses verification_session cookie</p>
+                        <div class="code-block" data-language="JSON">
+                            <code>{}</code>
+                        </div>
+
+                        <h4>Success Response (200 OK):</h4>
+                        <div class="code-block" data-language="JSON">
+                            <code>{
+    <span class="key">"detail"</span>: <span class="string">"OTP resent successfully"</span>
+}</code>
+                        </div>
+
+                        <h4>What Happens:</h4>
+                        <ol>
+                            <li>New OTP is generated (previous OTP becomes invalid)</li>
+                            <li>New OTP is sent to user's email</li>
+                            <li>OTP expiry time resets to 10 minutes</li>
+                            <li>User can now verify with new OTP</li>
+                        </ol>
+
+                        <h4>Error Responses:</h4>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Status Code</th>
+                                    <th>Response</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>400</strong></td>
+                                    <td>{ "detail": "Invalid or expired verification session" }</td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <h4>Frontend Implementation:</h4>
+                        <div class="code-block" data-language="JavaScript">
+                            <code>const resendOTP = async () => {
+    try {
+        const response = await fetch(
+            'http://localhost:8000/api/accounts/resend-otp/',
+            {
+                method: 'POST',
+                credentials: 'include'
+            }
+        );
+        
+        if (response.status === 200) {
+            console.log('New OTP sent to email');
+            // Show "OTP resent" notification
+        } else {
+            console.error('Failed to resend OTP');
+        }
+    } catch (err) {
+        console.error('Error:', err);
+    }
+};</code>
+                        </div>
+                    </div>
+
+                    <!-- Login Endpoint -->
+                    <!-- Forgot Password Endpoints -->
+                    <h2 id="forgot-password">FORGOT PASSWORD</h2>
+                    <div class="glass-card">
+                        <p class="text-muted">Endpoints for requesting an OTP, verifying it, and resetting a user's password.</p>
+                    </div>
+                    <div class="endpoint-card" id="ep-forgot-password-request">
+                        <div class="endpoint-header">
+                            <span class="method-badge method-post">POST</span>
+                            <span class="endpoint-path">/api/forgot-password/request-otp/</span>
+                            <span class="badge badge-public">Public</span>
+                        </div>
+
+                        <h4>Request Password Reset (Send OTP)</h4>
+                        <p>Generates and emails a one-time code (OTP) to the provided email and sets a short-lived verification cookie used for subsequent steps.</p>
+
+                        <h4>Request Body:</h4>
+                        <div class="code-block" data-language="JSON">
+                            <code>{
+    <span class="key">"email"</span>: <span class="string">"user@example.com"</span>
+}</code>
+                        </div>
+
+                        <h4>Success Response (200 OK):</h4>
+                        <div class="code-block" data-language="JSON">
+                            <code>{
+    <span class="key">"detail"</span>: <span class="string">"OTP sent to email."</span>
+}</code>
+                        </div>
+
+                        <h4>Response Cookies:</h4>
+                        <ul>
+                            <li><strong>verification_session:</strong> Signed token containing user ID (15 min expiry). HttpOnly, Secure.</li>
+                        </ul>
+
+                        <h4>Error Responses:</h4>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Code</th>
+                                    <th>Reason</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>429</td>
+                                    <td>Too many OTP requests (rate limit: 5 per 15 minutes)</td>
+                                </tr>
+                                <tr>
+                                    <td>500</td>
+                                    <td>Failed to send OTP email</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="endpoint-card" id="ep-forgot-password-verify">
+                        <div class="endpoint-header">
+                            <span class="method-badge method-post">POST</span>
+                            <span class="endpoint-path">/api/forgot-password/verify-otp/</span>
+                            <span class="badge badge-public">Public</span>
+                        </div>
+
+                        <h4>Verify OTP for Password Reset</h4>
+                        <p>Validates the OTP sent to the user's email. On success, marks the OTP request as used and sets a fresh verification cookie to allow password reset.</p>
+
+                        <h4>Requirements:</h4>
+                        <ul>
+                            <li>✓ Must have valid `verification_session` cookie (signed token)</li>
+                            <li>✓ OTP must match the most recent OTP for the user and not be expired (10 minutes)</li>
+                            <li>✓ OTP attempts limited (max 5)</li>
+                        </ul>
+
+                        <h4>Request Body:</h4>
+                        <div class="code-block" data-language="JSON">
+                            <code>{
+    <span class="key">"otp"</span>: <span class="string">"123456"</span>
+}</code>
+                        </div>
+
+                        <h4>Success Response (200 OK):</h4>
+                        <div class="code-block" data-language="JSON">
+                            <code>{
+    <span class="key">"detail"</span>: <span class="string">"OTP verified. You can now reset your password."</span>
+}</code>
+                        </div>
+
+                        <h4>Error Responses:</h4>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Code</th>
+                                    <th>Reason</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>400</td>
+                                    <td>Invalid or expired verification session</td>
+                                </tr>
+                                <tr>
+                                    <td>400</td>
+                                    <td>OTP not found / expired / invalid / too many attempts</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="endpoint-card" id="ep-forgot-password-reset">
+                        <div class="endpoint-header">
+                            <span class="method-badge method-post">POST</span>
+                            <span class="endpoint-path">/api/forgot-password/reset-password/</span>
+                            <span class="badge badge-public">Public</span>
+                        </div>
+
+                        <h4>Reset Password</h4>
+                        <p>Sets a new password for the user after successful OTP verification.</p>
+
+                        <h4>Request Body:</h4>
+                        <div class="code-block" data-language="JSON">
+                            <code>{
+    <span class="key">"new_password"</span>: <span class="string">"NewP@ssw0rd"</span>,
+    <span class="key">"confirm_password"</span>: <span class="string">"NewP@ssw0rd"</span>
+}</code>
+                        </div>
+
+                        <h4>Success Response (200 OK):</h4>
+                        <div class="code-block" data-language="JSON">
+                            <code>{
+    <span class="key">"detail"</span>: <span class="string">"Password reset successfully."</span>
+}</code>
+                        </div>
+
+                        <h4>Error Responses:</h4>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Code</th>
+                                    <th>Reason</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>400</td>
+                                    <td>Invalid or expired verification session</td>
+                                </tr>
+                                <tr>
+                                    <td>400</td>
+                                    <td>OTP verification required before resetting password</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        
+                        <h4>Notes:</h4>
+                        <ul>
+                            <li>OTP storage: OTPs are stored hashed (not plaintext) and expire after 10 minutes.</li>
+                            <li>Rate limiting: Requesting OTPs is rate-limited (5 per 15 minutes) using cache.</li>
+                            <li>Cookie: `verification_session` is HttpOnly, Secure, SameSite=None, and expires after 15 minutes.</li>
+                        </ul>
+                    </div>
+                    <div class="endpoint-card" id="ep-login">
+                        <div class="endpoint-header">
+                            <span class="method-badge method-post">POST</span>
+                            <span class="endpoint-path">/login/</span>
+                            <span class="badge badge-public">Public</span>
+                        </div>
+                        
+                        <h4>User Login</h4>
+                        <p>Authenticates user with email and password. Returns user data and sets JWT tokens in cookies.</p>
+
+                        <h4>Prerequisites:</h4>
+                        <ul>
+                            <li>✓ User account must be created</li>
+                            <li>✓ Email must be verified (is_email_verified = True)</li>
+                            <li>✓ Account must be approved by admin (is_active = True)</li>
+                        </ul>
+
+                        <h4>Request Body:</h4>
+                        <div class="code-block" data-language="JSON">
+                            <code>{
+    <span class="key">"email"</span>: <span class="string">"johnbright081132@gmail.com"</span>,
+    <span class="key">"password"</span>: <span class="string">"SecurePassword123!"</span>
+}</code>
+                        </div>
+
+                        <h4>Request Parameters:</h4>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Field</th>
+                                    <th>Type</th>
+                                    <th>Status</th>
+                                    <th>Description</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>email</strong></td>
+                                    <td>string (email)</td>
+                                    <td><span class="badge badge-required">Required</span></td>
+                                    <td>User's email address</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>password</strong></td>
+                                    <td>string</td>
+                                    <td><span class="badge badge-required">Required</span></td>
+                                    <td>User's password</td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <h4>Success Response (200 OK):</h4>
+                        <div class="code-block" data-language="JSON">
+                            <code>{
+    <span class="key">"status"</span>: <span class="string">"success"</span>,
+    <span class="key">"id"</span>: <span class="string">"550e8400-e29b-41d4-a716-446655440000"</span>,
+    <span class="key">"email"</span>: <span class="string">"johnbright081132@gmail.com"</span>,
+    <span class="key">"role"</span>: <span class="string">"student"</span>
+}</code>
+                        </div>
+
+                        <h4>Response Cookies Set:</h4>
+                        <ul>
+                            <li><strong>access_token:</strong> JWT token for API authentication (15 min validity)</li>
+                            <li><strong>refresh_token:</strong> For obtaining new access tokens (7 days validity)</li>
+                        </ul>
+
+                        <h4>Error Responses:</h4>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Status Code</th>
+                                    <th>Response</th>
+                                    <th>Cause</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>401</strong></td>
+                                    <td>{ "detail": "Invalid credentials" }</td>
+                                    <td>Wrong email or password</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>400</strong></td>
+                                    <td>{ "detail": "Email and password required" }</td>
+                                    <td>Missing email or password</td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <h4>Frontend Implementation:</h4>
+                        <div class="code-block" data-language="JavaScript">
+                            <code>const loginUser = async (email, password) => {
+    try {
+        const response = await fetch(
+            'http://localhost:8000/api/accounts/login/',
+            {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'include', // Important: allows cookie setting
+                body: JSON.stringify({ email, password })
+            }
+        );
+        
+        if (response.status === 200) {
+            const userData = await response.json();
+            // Store user data in app state
+            store.setUser(userData);
+            // Navigate to dashboard
+            window.location.href = '/dashboard';
+        } else {
+            const error = await response.json();
+            console.error('Login failed:', error.detail);
+        }
+    } catch (err) {
+        console.error('Error:', err);
+    }
+};</code>
+                        </div>
+                    </div>
+
+                    <!-- Refresh Endpoint -->
+                    <div class="endpoint-card" id="ep-refresh">
+                        <div class="endpoint-header">
+                            <span class="method-badge method-post">POST</span>
+                            <span class="endpoint-path">/refresh/</span>
+                            <span class="badge badge-auth">Authenticated</span>
+                        </div>
+                        
+                        <h4>Refresh Access Token</h4>
+                        <p>Obtains a new access token using the refresh token. Call this when access token expires.</p>
+
+                        <h4>Requirements:</h4>
+                        <ul>
+                            <li>✓ Must have valid refresh_token cookie</li>
+                        </ul>
+
+                        <h4>Request Body:</h4>
+                        <p class="text-muted">No body required - uses refresh_token cookie</p>
+                        <div class="code-block" data-language="JSON">
+                            <code>{}</code>
+                        </div>
+
+                        <h4>Success Response (200 OK):</h4>
+                        <div class="code-block" data-language="JSON">
+                            <code>{
+    <span class="key">"access"</span>: <span class="string">"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9..."</span>
+}</code>
+                        </div>
+
+                        <h4>Response Cookies Set:</h4>
+                        <ul>
+                            <li><strong>access_token:</strong> New JWT token (15 min validity)</li>
+                        </ul>
+
+                        <h4>Error Responses:</h4>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Status Code</th>
+                                    <th>Response</th>
+                                    <th>Cause</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>401</strong></td>
+                                    <td>{ "detail": "No refresh token" }</td>
+                                    <td>refresh_token cookie not found</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>401</strong></td>
+                                    <td>{ "detail": "Token is invalid or expired" }</td>
+                                    <td>Refresh token is blacklisted or expired</td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <h4>Frontend Implementation (Axios Interceptor Example):</h4>
+                        <div class="code-block" data-language="JavaScript">
+                            <code>// Setup Axios interceptor for auto-refresh
+api.interceptors.response.use(
+    response => response,
+    async error => {
+        const original = error.config;
+        
+        if (error.response.status === 401 && !original._retry) {
+            original._retry = true;
+            
+            try {
+                await fetch(
+                    'http://localhost:8000/api/accounts/refresh/',
+                    {
+                        method: 'POST',
+                        credentials: 'include'
+                    }
+                );
+                
+                // Retry original request with new token
+                return api(original);
+            } catch (refreshError) {
+                // Redirect to login
+                window.location.href = '/login';
+            }
+        }
+        
+        return Promise.reject(error);
+    }
+);</code>
+                        </div>
+                    </div>
+
+                    <!-- Logout Endpoint -->
+                    <div class="endpoint-card" id="ep-logout">
+                        <div class="endpoint-header">
+                            <span class="method-badge method-post">POST</span>
+                            <span class="endpoint-path">/logout/</span>
+                            <span class="badge badge-auth">Authenticated</span>
+                        </div>
+                        
+                        <h4>User Logout</h4>
+                        <p>Logs out the user and invalidates all tokens.</p>
+
+                        <h4>Requirements:</h4>
+                        <ul>
+                            <li>✓ Must be authenticated (have valid tokens)</li>
+                            <li>✓ Must have refresh_token cookie</li>
+                        </ul>
+
+                        <h4>Request Body:</h4>
+                        <p class="text-muted">No body required</p>
+                        <div class="code-block" data-language="JSON">
+                            <code>{}</code>
+                        </div>
+
+                        <h4>Success Response (204 No Content):</h4>
+                        <p>HTTP 204 status with no body</p>
+
+                        <h4>What Happens:</h4>
+                        <ol>
+                            <li>Refresh token is blacklisted</li>
+                            <li>Access token is deleted from cookies</li>
+                            <li>Refresh token is deleted from cookies</li>
+                            <li>User is fully logged out</li>
+                        </ol>
+
+                        <h4>Error Responses:</h4>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Status Code</th>
+                                    <th>Response</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>401</strong></td>
+                                    <td>{ "detail": "Authentication credentials were not provided." }</td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <h4>Frontend Implementation:</h4>
+                        <div class="code-block" data-language="JavaScript">
+                            <code>const logoutUser = async () => {
+    try {
+        const response = await fetch(
+            'http://localhost:8000/api/accounts/logout/',
+            {
+                method: 'POST',
+                credentials: 'include'
+            }
+        );
+        
+        if (response.status === 204) {
+            // Clear user data from app state
+            store.clearUser();
+            // Redirect to login
+            window.location.href = '/login';
+        }
+    } catch (err) {
+        console.error('Logout error:', err);
+    }
+};</code>
+                        </div>
+                    </div>
+
+                    <!-- Current User Endpoint -->
+                    <div class="endpoint-card" id="ep-me">
+                        <div class="endpoint-header">
+                            <span class="method-badge method-get">GET</span>
+                            <span class="endpoint-path">/me/</span>
+                            <span class="badge badge-auth">Authenticated</span>
+                        </div>
+                        
+                        <h4>Get Current User Profile</h4>
+                        <p>Returns the authenticated user's profile information.</p>
+
+                        <h4>Requirements:</h4>
+                        <ul>
+                            <li>✓ Must be authenticated (valid access_token)</li>
+                        </ul>
+
+                        <h4>Request:</h4>
+                        <div class="code-block" data-language="URL">
+                            <code>GET /api/accounts/me/</code>
+                        </div>
+
+                        <h4>Success Response (200 OK):</h4>
+                        <div class="code-block" data-language="JSON">
+                            <code>{
+    <span class="key">"id"</span>: <span class="string">"550e8400-e29b-41d4-a716-446655440000"</span>,
+    <span class="key">"email"</span>: <span class="string">"johnbright081132@gmail.com"</span>,
+    <span class="key">"first_name"</span>: <span class="string">"John"</span>,
+    <span class="key">"last_name"</span>: <span class="string">"Doe"</span>,
+    <span class="key">"role"</span>: <span class="string">"student"</span>
+}</code>
+                        </div>
+
+                        <h4>Error Responses:</h4>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Status Code</th>
+                                    <th>Response</th>
+                                    <th>Cause</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>401</strong></td>
+                                    <td>{ "detail": "Authentication credentials were not provided." }</td>
+                                    <td>Not authenticated</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>401</strong></td>
+                                    <td>{ "detail": "Invalid token" }</td>
+                                    <td>Access token is invalid or expired</td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <h4>Frontend Implementation:</h4>
+                        <div class="code-block" data-language="JavaScript">
+                            <code>const getCurrentUser = async () => {
+    try {
+        const response = await fetch(
+            'http://localhost:8000/api/accounts/me/',
+            {
+                method: 'GET',
+                credentials: 'include' // Includes access_token
+            }
+        );
+        
+        if (response.status === 200) {
+            const userData = await response.json();
+            store.setUser(userData);
+            return userData;
+        } else if (response.status === 401) {
+            // Token expired, try refresh
+            await refreshToken();
+            return getCurrentUser(); // Retry
+        }
+    } catch (err) {
+        console.error('Error fetching user:', err);
+    }
+};</code>
+                        </div>
+                    </div>
+
+                    <!-- Student Test Endpoint -->
+                    <div class="endpoint-card" id="ep-test">
+                        <div class="endpoint-header">
+                            <span class="method-badge method-get">GET</span>
+                            <span class="endpoint-path">/student-test/</span>
+                            <span class="badge badge-auth">Authenticated</span>
+                        </div>
+                        
+                        <h4>Student Role Test Endpoint</h4>
+                        <p>Test endpoint to verify student role access. Only accessible by users with student role.</p>
+
+                        <h4>Requirements:</h4>
+                        <ul>
+                            <li>✓ Must be authenticated</li>
+                            <li>✓ User role must be "student"</li>
+                        </ul>
+
+                        <h4>Permissions:</h4>
+                        <div class="permissions">
+                            <span class="permission-chip student">IsStudent</span>
+                        </div>
+
+                        <h4>Request:</h4>
+                        <div class="code-block" data-language="URL">
+                            <code>GET /api/accounts/student-test/</code>
+                        </div>
+
+                        <h4>Success Response (200 OK):</h4>
+                        <div class="code-block" data-language="JSON">
+                            <code>{
+    <span class="key">"message"</span>: <span class="string">"Hello Student John Doe!"</span>
+}</code>
+                        </div>
+
+                        <h4>Error Responses:</h4>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Status Code</th>
+                                    <th>Response</th>
+                                    <th>Cause</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>401</strong></td>
+                                    <td>{ "detail": "Authentication credentials were not provided." }</td>
+                                    <td>Not authenticated</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>403</strong></td>
+                                    <td>{ "detail": "You do not have permission to perform this action." }</td>
+                                    <td>User role is not student</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <!-- Permissions Section -->
+                <section id="permissions">
+                    <h2>🔑 Permissions & Access Control</h2>
+
+                    <div class="glass-card">
+                        <h3>Permission System Overview</h3>
+                        <p>The API uses role-based access control (RBAC) with three user roles. Each role has specific permissions:</p>
+
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Role</th>
+                                    <th>Description</th>
+                                    <th>Database Value</th>
+                                    <th>Access Level</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>Student</strong></td>
+                                    <td>End users who view grades and courses</td>
+                                    <td><span class="code-block" data-language="text">"student"</span></td>
+                                    <td>Low</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Teacher</strong></td>
+                                    <td>Instructors who manage courses and grades</td>
+                                    <td><span class="code-block" data-language="text">"teacher"</span></td>
+                                    <td>Medium</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Admin</strong></td>
+                                    <td>System administrators with full control</td>
+                                    <td><span class="code-block" data-language="text">"admin"</span></td>
+                                    <td>High</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="glass-card">
+                        <h3>Permission Classes</h3>
+                        
+                        <h4>IsStudent</h4>
+                        <div class="code-block" data-language="Python">
+                            <code>class IsStudent(BasePermission):
+    def has_permission(self, request, view):
+        return request.user.is_authenticated and \
+               request.user.role == UserRole.STUDENT</code>
+                        </div>
+                        <ul>
+                            <li>Requires user to be authenticated</li>
+                            <li>User role must be exactly "student"</li>
+                            <li>Used on endpoints specific to student functionality</li>
+                        </ul>
+
+                        <h4>IsTeacher</h4>
+                        <div class="code-block" data-language="Python">
+                            <code>class IsTeacher(BasePermission):
+    def has_permission(self, request, view):
+        return request.user.is_authenticated and \
+               request.user.role == UserRole.TEACHER</code>
+                        </div>
+                        <ul>
+                            <li>Requires user to be authenticated</li>
+                            <li>User role must be exactly "teacher"</li>
+                            <li>Used on endpoints for teacher operations</li>
+                        </ul>
+
+                        <h4>IsAdmin</h4>
+                        <div class="code-block" data-language="Python">
+                            <code>class IsAdmin(BasePermission):
+    def has_permission(self, request, view):
+        return request.user.is_authenticated and \
+               request.user.role == UserRole.ADMIN</code>
+                        </div>
+                        <ul>
+                            <li>Requires user to be authenticated</li>
+                            <li>User role must be exactly "admin"</li>
+                            <li>Used on admin-only endpoints (user approval, system management)</li>
+                        </ul>
+                    </div>
+
+                    <div class="glass-card">
+                        <h3>How Permissions Work</h3>
+                        
+                        <h4>Implementation in Views:</h4>
+                        <div class="code-block" data-language="Python">
+                            <code>class StudentRoleTestView(APIView):
+    permission_classes = [IsAuthenticated, IsStudent]
+    
+    def get(self, request):
+        # This code only runs if user is authenticated AND is a student
+        return Response({...})</code>
+                        </div>
+
+                        <h4>Permission Resolution:</h4>
+                        <ol>
+                            <li>User makes request to endpoint</li>
+                            <li>API checks authentication (if required)</li>
+                            <li>API checks permission classes in order</li>
+                            <li>ALL permissions must pass (AND logic)</li>
+                            <li>If any fail → 403 Forbidden response</li>
+                            <li>If all pass → endpoint logic executes</li>
+                        </ol>
+
+                        <div class="highlight info">
+                            <strong>Note:</strong> Permission checks happen before the view's method executes. Failed checks return immediately with appropriate status codes.
+                        </div>
+                    </div>
+
+                    <div class="glass-card">
+                        <h3>Endpoint Permission Summary</h3>
+
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Endpoint</th>
+                                    <th>Method</th>
+                                    <th>Auth Required</th>
+                                    <th>Permissions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>/register/</td>
+                                    <td>POST</td>
+                                    <td>❌ No</td>
+                                    <td>Public</td>
+                                </tr>
+                                <tr>
+                                    <td>/verify-otp/</td>
+                                    <td>POST</td>
+                                    <td>❌ No (uses session cookie)</td>
+                                    <td>Public</td>
+                                </tr>
+                                <tr>
+                                    <td>/resend-otp/</td>
+                                    <td>POST</td>
+                                    <td>❌ No (uses session cookie)</td>
+                                    <td>Public</td>
+                                </tr>
+                                <tr>
+                                    <td>/login/</td>
+                                    <td>POST</td>
+                                    <td>❌ No</td>
+                                    <td>Public</td>
+                                </tr>
+                                <tr>
+                                    <td>/refresh/</td>
+                                    <td>POST</td>
+                                    <td>❌ No (uses refresh token)</td>
+                                    <td>Public</td>
+                                </tr>
+                                <tr>
+                                    <td>/logout/</td>
+                                    <td>POST</td>
+                                    <td>✓ Yes</td>
+                                    <td>IsAuthenticated</td>
+                                </tr>
+                                <tr>
+                                    <td>/me/</td>
+                                    <td>GET</td>
+                                    <td>✓ Yes</td>
+                                    <td>IsAuthenticated</td>
+                                </tr>
+                                <tr>
+                                    <td>/student-test/</td>
+                                    <td>GET</td>
+                                    <td>✓ Yes</td>
+                                    <td>IsAuthenticated, IsStudent</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="glass-card">
+                        <h3>Frontend Permission Handling</h3>
+
+                        <h4>Best Practice Pattern:</h4>
+                        <div class="code-block" data-language="JavaScript">
+                            <code>// After login, store user role
+const user = await loginUser(credentials);
+store.setUserRole(user.role);
+
+// Before navigating to protected routes
+const ProtectedRoute = ({ requiredRole, children }) => {
+    const userRole = store.getUserRole();
+    
+    if (!userRole) {
+        return <Navigate to="/login" />;
+    }
+    
+    if (requiredRole && userRole !== requiredRole) {
+        return <Navigate to="/unauthorized" />;
+    }
+    
+    return children;
+};
+
+// Use in routes
+&lt;ProtectedRoute requiredRole="student"&gt;
+    &lt;StudentDashboard /&gt;
+&lt;/ProtectedRoute&gt;</code>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- HTTP Status Codes -->
+                <section id="responses">
+                    <h2>📊 HTTP Status Codes & Responses</h2>
+
+                    <div class="glass-card">
+                        <h3>Success Codes (2xx)</h3>
+
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Code</th>
+                                    <th>Meaning</th>
+                                    <th>When Used</th>
+                                    <th>Example</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>200 OK</strong></td>
+                                    <td>Request successful, body contains data</td>
+                                    <td>GET requests, successful POST</td>
+                                    <td>Login, fetch user data</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>201 Created</strong></td>
+                                    <td>Resource successfully created</td>
+                                    <td>POST registration</td>
+                                    <td>User account registration</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>204 No Content</strong></td>
+                                    <td>Request successful, no body returned</td>
+                                    <td>DELETE, logout</td>
+                                    <td>Logout successful</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="glass-card">
+                        <h3>Client Error Codes (4xx)</h3>
+
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Code</th>
+                                    <th>Meaning</th>
+                                    <th>When Used</th>
+                                    <th>Example Response</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>400 Bad Request</strong></td>
+                                    <td>Invalid request data or parameters</td>
+                                    <td>Missing fields, invalid OTP, expired session</td>
+                                    <td>{ "detail": "Email is required" }</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>401 Unauthorized</strong></td>
+                                    <td>Authentication failed or token invalid</td>
+                                    <td>Wrong credentials, expired token, no token</td>
+                                    <td>{ "detail": "Invalid credentials" }</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>403 Forbidden</strong></td>
+                                    <td>Authenticated but not authorized</td>
+                                    <td>Student accessing admin endpoint</td>
+                                    <td>{ "detail": "You do not have permission..." }</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>404 Not Found</strong></td>
+                                    <td>Resource doesn't exist</td>
+                                    <td>Invalid endpoint URL</td>
+                                    <td>{ "detail": "Not found." }</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>429 Too Many Requests</strong></td>
+                                    <td>Rate limit exceeded</td>
+                                    <td>Too many login/OTP attempts</td>
+                                    <td>{ "detail": "Request was throttled..." }</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="glass-card">
+                        <h3>Server Error Codes (5xx)</h3>
+
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Code</th>
+                                    <th>Meaning</th>
+                                    <th>When Used</th>
+                                    <th>Example</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>500 Internal Server Error</strong></td>
+                                    <td>Server-side error occurred</td>
+                                    <td>Email sending failed, database error</td>
+                                    <td>{ "detail": "Failed to send OTP email" }</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>503 Service Unavailable</strong></td>
+                                    <td>Server temporarily unavailable</td>
+                                    <td>Maintenance, database down</td>
+                                    <td>N/A</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="glass-card">
+                        <h3>Rate Limiting</h3>
+                        
+                        <h4>Throttle Rates (from settings.py):</h4>
+                        <ul>
+                            <li><strong>Anonymous Users:</strong> 10 requests per minute</li>
+                            <li><strong>Authenticated Users:</strong> 5 requests per minute</li>
+                        </ul>
+
+                        <h4>Rate Limit Response:</h4>
+                        <div class="code-block" data-language="JSON">
+                            <code>{
+    <span class="key">"detail"</span>: <span class="string">"Request was throttled. Expected available in 45 seconds."</span>
+}</code>
+                        </div>
+
+                        <h4>Headers Included:</h4>
+                        <ul>
+                            <li><strong>X-RateLimit-Limit:</strong> Maximum requests allowed</li>
+                            <li><strong>X-RateLimit-Remaining:</strong> Requests remaining</li>
+                            <li><strong>X-RateLimit-Reset:</strong> Time when limit resets</li>
+                        </ul>
+                    </div>
+                </section>
+
+                <!-- Email Templates Section -->
+                <section id="emails">
+                    <h2>📧 Email Templates & Notifications</h2>
+
+                    <div class="glass-card">
+                        <h3>Email System Overview</h3>
+                        <p>The system automatically sends HTML emails at various stages of the user lifecycle. All emails are sent with proper formatting and branding.</p>
+
+                        <h4>Email Configuration (settings.py):</h4>
+                        <ul>
+                            <li><strong>Email Backend:</strong> Django's email system</li>
+                            <li><strong>From Email:</strong> DEFAULT_FROM_EMAIL setting</li>
+                            <li><strong>Format:</strong> HTML with fallback plain text</li>
+                        </ul>
+                    </div>
+
+                    <div class="glass-card">
+                        <h3>Email #1: OTP Verification</h3>
+                        
+                        <h4>When Sent:</h4>
+                        <ul>
+                            <li>After user registration (POST /register/)</li>
+                            <li>When user requests OTP resend (POST /resend-otp/)</li>
+                        </ul>
+
+                        <h4>Email Contents:</h4>
+                        <ul>
+                            <li>Subject: "Verify your email"</li>
+                            <li>User's first name greeting</li>
+                            <li>6-digit OTP in large, prominent format</li>
+                            <li>OTP expiry countdown (10 minutes)</li>
+                            <li>Instructions to enter OTP</li>
+                            <li>Security warning</li>
+                        </ul>
+
+                        <h4>Recipient:</h4>
+                        <p>User's email address provided during registration</p>
+
+                        <h4>Template File:</h4>
+                        <p><span class="text-muted">templates/emails/email_otp_verification.html</span></p>
+                    </div>
+
+                    <div class="glass-card">
+                        <h3>Email #2: Admin Pending Approval Notification</h3>
+                        
+                        <h4>When Sent:</h4>
+                        <ul>
+                            <li>After user successfully verifies OTP (POST /verify-otp/)</li>
+                            <li>Only sent to all active admin users</li>
+                        </ul>
+
+                        <h4>Purpose:</h4>
+                        <p>Notifies administrators of new user awaiting approval</p>
+
+                        <h4>Email Contents:</h4>
+                        <ul>
+                            <li>Subject: "New User Registration Awaiting Approval"</li>
+                            <li>New user's full name</li>
+                            <li>New user's email address</li>
+                            <li>Registration timestamp</li>
+                            <li>Link to admin dashboard for approval</li>
+                        </ul>
+
+                        <h4>Recipients:</h4>
+                        <p>All active admin users (role="admin" AND is_active=True)</p>
+
+                        <h4>Template File:</h4>
+                        <p><span class="text-muted">templates/emails/email_admin_pending_approval.html</span></p>
+                    </div>
+
+                    <div class="glass-card">
+                        <h3>Email #3: User Approval Confirmation</h3>
+                        
+                        <h4>When Sent:</h4>
+                        <ul>
+                            <li>After admin approves user (via admin panel or ApproveUserView)</li>
+                        </ul>
+
+                        <h4>Purpose:</h4>
+                        <p>Confirms to user that their account has been approved and they can now login</p>
+
+                        <h4>Email Contents:</h4>
+                        <ul>
+                            <li>Subject: "Your account has been approved"</li>
+                            <li>User's first name greeting</li>
+                            <li>Approval confirmation message</li>
+                            <li>Instructions to login</li>
+                            <li>Link to login page (FRONTEND_URL)</li>
+                        </ul>
+
+                        <h4>Recipient:</h4>
+                        <p>The approved user's email address</p>
+
+                        <h4>Template File:</h4>
+                        <p><span class="text-muted">templates/emails/email_user_approval.html</span></p>
+                    </div>
+
+                    <div class="glass-card">
+                        <h3>Email #4: User Rejection</h3>
+                        
+                        <h4>When Sent:</h4>
+                        <ul>
+                            <li>After admin rejects/deletes user account (via admin panel or RejectUserView)</li>
+                        </ul>
+
+                        <h4>Purpose:</h4>
+                        <p>Informs user that their registration was rejected</p>
+
+                        <h4>Email Contents:</h4>
+                        <ul>
+                            <li>Subject: "Your account registration has been rejected"</li>
+                            <li>User's first name greeting</li>
+                            <li>Rejection message</li>
+                            <li>Contact information for support</li>
+                            <li>Option to reregister</li>
+                        </ul>
+
+                        <h4>Recipient:</h4>
+                        <p>The rejected user's email address (sent before account deletion)</p>
+
+                        <h4>Template File:</h4>
+                        <p><span class="text-muted">templates/emails/email_user_rejection.html</span></p>
+
+                        <h4>Important:</h4>
+                        <p>User account is deleted from database after this email is sent</p>
+                    </div>
+
+                    <div class="glass-card">
+                        <h3>Email Sending Logic</h3>
+
+                        <h4>Implementation Details:</h4>
+                        <div class="code-block" data-language="Python">
+                            <code>def send_otp_email(user, otp):
+    subject = "Verify your email"
+    html_content = render_to_string(
+        "emails/email_otp_verification.html",
+        {"user": user, "otp": otp}
+    )
+    
+    email = EmailMultiAlternatives(
+        subject,
+        to=[user.email],
+        from_email=settings.DEFAULT_FROM_EMAIL
+    )
+    email.attach_alternative(html_content, "text/html")
+    email.send()</code>
+                        </div>
+
+                        <h4>Key Points:</h4>
+                        <ul>
+                            <li>HTML emails use templates for consistent formatting</li>
+                            <li>Templates are rendered with context variables</li>
+                            <li>FRONTEND_URL from settings is used for email links</li>
+                            <li>All emails are sent asynchronously (non-blocking)</li>
+                            <li>Email failures are caught and returned in API response</li>
+                        </ul>
+                    </div>
+
+                    <div class="glass-card">
+                        <h3>Email Environment Variables</h3>
+
+                        <h4>Required Settings in .env:</h4>
+                        <div class="code-block" data-language="Text">
+                            <code>DEFAULT_FROM_EMAIL=your-email@example.com
+FRONTEND_URL=http://localhost:3000
+EMAIL_BACKEND=django.core.mail.backends.smtp.EmailBackend
+EMAIL_HOST=smtp.gmail.com
+EMAIL_PORT=587
+EMAIL_USE_TLS=True
+EMAIL_HOST_USER=your-email@example.com
+EMAIL_HOST_PASSWORD=your-app-password</code>
+                        </div>
+
+                        <div class="highlight warning">
+                            <strong>Important:</strong> For Gmail, use App Passwords (not your regular password). Generate one in Google Account → Security settings.
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Configuration Section -->
+                <section id="configuration">
+                    <h2>⚙️ Configuration & Settings</h2>
+
+                    <div class="glass-card">
+                        <h3>Django Settings Overview</h3>
+
+                        <h4>Database Configuration:</h4>
+                        <div class="code-block" data-language="Python">
+                            <code>DATABASES = {
+    <span class="key">'default'</span>: {
+        <span class="key">'ENGINE'</span>: <span class="string">'django.db.backends.sqlite3'</span>,
+        <span class="key">'NAME'</span>: BASE_DIR / <span class="string">'db.sqlite3'</span>,
+    }
+}</code>
+                        </div>
+                        <p class="text-muted">SQLite3 is used for development. For production, use PostgreSQL.</p>
+
+                        <h4>Authentication Configuration:</h4>
+                        <div class="code-block" data-language="Python">
+                            <code>AUTH_USER_MODEL = <span class="string">'accounts.User'</span>
+
+# JWT Configuration
+SIMPLE_JWT = {
+    <span class="key">"ACCESS_TOKEN_LIFETIME"</span>: timedelta(minutes=<span class="number">15</span>),
+    <span class="key">"REFRESH_TOKEN_LIFETIME"</span>: timedelta(days=<span class="number">7</span>),
+}</code>
+                        </div>
+                    </div>
+
+                    <div class="glass-card">
+                        <h3>REST Framework Configuration</h3>
+
+                        <h4>Authentication & Permissions:</h4>
+                        <div class="code-block" data-language="Python">
+                            <code>REST_FRAMEWORK = {
+    <span class="key">'DEFAULT_PERMISSION_CLASSES'</span>: [
+        <span class="string">'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'</span>
+    ],
+    <span class="key">"DEFAULT_AUTHENTICATION_CLASSES"</span>: (
+        <span class="string">"accounts.authentication.CookieJWTAuthentication"</span>,
+    ),
+}</code>
+                        </div>
+
+                        <h4>Rate Limiting:</h4>
+                        <div class="code-block" data-language="Python">
+                            <code><span class="key">"DEFAULT_THROTTLE_CLASSES"</span>: [
+    <span class="string">"rest_framework.throttling.AnonRateThrottle"</span>,
+    <span class="string">"rest_framework.throttling.UserRateThrottle"</span>,
+],
+<span class="key">"DEFAULT_THROTTLE_RATES"</span>: {
+    <span class="key">"anon"</span>: <span class="string">"10/min"</span>,
+    <span class="key">"user"</span>: <span class="string">"5/min"</span>,
+}</code>
+                        </div>
+                    </div>
+
+                    <div class="glass-card">
+                        <h3>Installed Apps</h3>
+
+                        <h4>Django Core Apps:</h4>
+                        <ul>
+                            <li>django.contrib.admin - Admin interface</li>
+                            <li>django.contrib.auth - Authentication framework</li>
+                            <li>django.contrib.contenttypes - Content type system</li>
+                            <li>django.contrib.sessions - Session management</li>
+                            <li>django.contrib.messages - Message framework</li>
+                        </ul>
+
+                        <h4>Third-party Apps:</h4>
+                        <ul>
+                            <li><strong>rest_framework:</strong> REST API framework</li>
+                            <li><strong>rest_framework_simplejwt:</strong> JWT authentication</li>
+                            <li><strong>rest_framework_simplejwt.token_blacklist:</strong> Token blacklisting</li>
+                            <li><strong>jazzmin:</strong> Enhanced admin interface</li>
+                        </ul>
+
+                        <h4>Custom Apps:</h4>
+                        <ul>
+                            <li><strong>accounts:</strong> User authentication & management</li>
+                            <li><strong>notifications:</strong> System notifications</li>
+                            <li><strong>courses:</strong> Course management</li>
+                        </ul>
+                    </div>
+
+                    <div class="glass-card">
+                        <h3>Middleware Stack</h3>
+
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Middleware</th>
+                                    <th>Purpose</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>SecurityMiddleware</strong></td>
+                                    <td>Adds security headers</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>SessionMiddleware</strong></td>
+                                    <td>Manages user sessions</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>CommonMiddleware</strong></td>
+                                    <td>Adds common headers, normalizes URLs</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>CsrfViewMiddleware</strong></td>
+                                    <td>CSRF protection</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>AuthenticationMiddleware</strong></td>
+                                    <td>Associates users with requests</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>MessageMiddleware</strong></td>
+                                    <td>Message framework support</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>RefreshTokenMiddleware</strong></td>
+                                    <td>Custom: Handles token refresh logic</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="glass-card">
+                        <h3>Environment Variables (.env)</h3>
+
+                        <h4>Required Variables:</h4>
+                        <div class="code-block" data-language="Text">
+                            <code># Django Settings
+DJANGO_SECRET_KEY=your-secret-key-here
+DEBUG=True  # Set to False in production
+
+# Email Configuration
+DEFAULT_FROM_EMAIL=your-email@example.com
+FRONTEND_URL=http://localhost:3000
+EMAIL_HOST=smtp.gmail.com
+EMAIL_PORT=587
+EMAIL_USE_TLS=True
+EMAIL_HOST_USER=your-email@gmail.com
+EMAIL_HOST_PASSWORD=your-app-password
+
+# Database (optional, defaults to SQLite)
+DATABASE_URL=postgresql://user:password@localhost/dbname</code>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Best Practices Section -->
+                <section>
+                    <h2>🎯 Frontend Implementation Best Practices</h2>
+
+                    <div class="glass-card">
+                        <h3>Authentication Flow Implementation</h3>
+
+                        <h4>Step-by-Step Guide:</h4>
+                        <div class="code-block" data-language="JavaScript">
+                            <code>// 1. Registration
+const handleRegister = async (formData) => {
+    const response = await fetch(
+        'http://localhost:8000/api/accounts/register/',
+        {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify(formData)
+        }
+    );
+    
+    if (response.status === 201) {
+        // Navigate to OTP verification page
+        navigate('/verify-otp');
+    }
+};
+
+// 2. OTP Verification
+const handleVerifyOTP = async (otp) => {
+    const response = await fetch(
+        'http://localhost:8000/api/accounts/verify-otp/',
+        {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify({ otp })
+        }
+    );
+    
+    if (response.status === 200) {
+        // Show "awaiting approval" message
+        navigate('/pending-approval');
+    }
+};
+
+// 3. Login (after admin approval)
+const handleLogin = async (email, password) => {
+    const response = await fetch(
+        'http://localhost:8000/api/accounts/login/',
+        {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify({ email, password })
+        }
+    );
+    
+    if (response.status === 200) {
+        const userData = await response.json();
+        store.setUser(userData); // Redux, Context, Zustand, etc
+        navigate('/dashboard');
+    }
+};
+
+// 4. Token Refresh (auto-handled with interceptor)
+// 5. Logout
+const handleLogout = async () => {
+    await fetch('http://localhost:8000/api/accounts/logout/', {
+        method: 'POST',
+        credentials: 'include'
+    });
+    store.clearUser();
+    navigate('/login');
+};</code>
+                        </div>
+                    </div>
+
+                    <div class="glass-card">
+                        <h3>HTTP Interceptor Setup (Axios)</h3>
+
+                        <div class="code-block" data-language="JavaScript">
+                            <code>import axios from 'axios';
+
+const api = axios.create({
+    baseURL: 'http://localhost:8000/api',
+    withCredentials: true, // Include cookies in all requests
+});
+
+// Response interceptor for token refresh
+api.interceptors.response.use(
+    response => response,
+    async error => {
+        const originalRequest = error.config;
+        
+        // Only retry once per request
+        if (error.response?.status === 401 && !originalRequest._retry) {
+            originalRequest._retry = true;
+            
+            try {
+                // Attempt token refresh
+                await api.post('/accounts/refresh/');
+                
+                // Retry original request with new token
+                return api(originalRequest);
+            } catch (refreshError) {
+                // Refresh failed, redirect to login
+                window.location.href = '/login';
+                return Promise.reject(refreshError);
+            }
+        }
+        
+        return Promise.reject(error);
+    }
+);
+
+export default api;</code>
+                        </div>
+                    </div>
+
+                    <div class="glass-card">
+                        <h3>Protected Route Component</h3>
+
+                        <div class="code-block" data-language="JavaScript">
+                            <code>// React example with role-based routing
+const ProtectedRoute = ({ 
+    children, 
+    requiredRole = null,
+    requiredRoles = null 
+}) => {
+    const { user, isLoading } = useAuth();
+    
+    if (isLoading) return <LoadingSpinner />;
+    
+    if (!user) {
+        return <Navigate to="/login" />;
+    }
+    
+    // Check single role
+    if (requiredRole && user.role !== requiredRole) {
+        return <Navigate to="/unauthorized" />;
+    }
+    
+    // Check multiple roles
+    if (requiredRoles && !requiredRoles.includes(user.role)) {
+        return <Navigate to="/unauthorized" />;
+    }
+    
+    return children;
+};
+
+// Usage in Routes
+&lt;Routes&gt;
+    &lt;Route 
+        path="/student-dashboard" 
+        element={
+            &lt;ProtectedRoute requiredRole="student"&gt;
+                &lt;StudentDashboard /&gt;
+            &lt;/ProtectedRoute&gt;
+        } 
+    /&gt;
+    &lt;Route 
+        path="/admin-panel" 
+        element={
+            &lt;ProtectedRoute requiredRole="admin"&gt;
+                &lt;AdminPanel /&gt;
+            &lt;/ProtectedRoute&gt;
+        } 
+    /&gt;
+&lt;/Routes&gt;</code>
+                        </div>
+                    </div>
+
+                    <div class="glass-card">
+                        <h3>State Management Pattern</h3>
+
+                        <div class="code-block" data-language="JavaScript">
+                            <code>// Example using Zustand
+import create from 'zustand';
+
+export const useAuthStore = create((set) => ({
+    user: null,
+    isLoading: true,
+    isAuthenticated: false,
+    
+    // Initialize auth state (check /me endpoint)
+    initializeAuth: async () => {
+        try {
+            const response = await api.get('/accounts/me/');
+            set({
+                user: response.data,
+                isAuthenticated: true,
+                isLoading: false
+            });
+        } catch (error) {
+            set({
+                user: null,
+                isAuthenticated: false,
+                isLoading: false
+            });
+        }
+    },
+    
+    // Login
+    login: async (email, password) => {
+        const response = await api.post('/accounts/login/', {
+            email,
+            password
+        });
+        set({
+            user: response.data,
+            isAuthenticated: true
+        });
+        return response.data;
+    },
+    
+    // Logout
+    logout: async () => {
+        await api.post('/accounts/logout/');
+        set({
+            user: null,
+            isAuthenticated: false
+        });
+    },
+    
+    // Clear state
+    clearUser: () => set({
+        user: null,
+        isAuthenticated: false
+    })
+}));
+
+// Initialize auth on app load
+useEffect(() => {
+    useAuthStore.getState().initializeAuth();
+}, []);</code>
+                        </div>
+                    </div>
+
+                    <div class="glass-card">
+                        <h3>Error Handling Pattern</h3>
+
+                        <div class="code-block" data-language="JavaScript">
+                            <code>// Centralized error handling
+const handleApiError = (error) => {
+    if (!error.response) {
+        // Network error
+        return 'Network error. Please check your connection.';
+    }
+    
+    const { status, data } = error.response;
+    
+    switch (status) {
+        case 400:
+            return data.detail || 'Invalid request. Please check your input.';
+        case 401:
+            return 'Please login again.';
+        case 403:
+            return 'You do not have permission to perform this action.';
+        case 404:
+            return 'Resource not found.';
+        case 429:
+            return 'Too many requests. Please wait a moment and try again.';
+        case 500:
+            return 'Server error. Please try again later.';
+        default:
+            return 'An unexpected error occurred.';
+    }
+};
+
+// Usage
+try {
+    await api.post('/accounts/register/', data);
+} catch (error) {
+    const message = handleApiError(error);
+    showErrorNotification(message);
+}</code>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Troubleshooting -->
+                <section>
+                    <h2>🔧 Troubleshooting Guide</h2>
+
+                    <div class="glass-card">
+                        <h3>Common Issues & Solutions</h3>
+
+                        <h4>❌ "Email is required" Error on Registration</h4>
+                        <p><strong>Cause:</strong> Email field is missing or empty in request body</p>
+                        <p><strong>Solution:</strong></p>
+                        <ul>
+                            <li>Ensure email field is included in POST body</li>
+                            <li>Verify email format is valid (contains @)</li>
+                            <li>Check Content-Type header is "application/json"</li>
+                        </ul>
+
+                        <h4>❌ Cookies Not Being Set</h4>
+                        <p><strong>Cause:</strong> credentials: 'include' not set in fetch/axios</p>
+                        <p><strong>Solution:</strong></p>
+                        <ul>
+                            <li>Add credentials: 'include' to all requests</li>
+                            <li>For Axios: set { withCredentials: true }</li>
+                            <li>Verify backend CORS settings allow credentials</li>
+                        </ul>
+
+                        <h4>❌ "Invalid or expired verification session"</h4>
+                        <p><strong>Cause:</strong> verification_session cookie missing or expired (>15 min)</p>
+                        <p><strong>Solution:</strong></p>
+                        <ul>
+                            <li>Complete OTP verification within 15 minutes</li>
+                            <li>If expired, return to registration and repeat</li>
+                            <li>Ensure cookies are enabled in browser</li>
+                        </ul>
+
+                        <h4>❌ "Invalid OTP" After Multiple Attempts</h4>
+                        <p><strong>Cause:</strong> Wrong OTP entered or exceeded 5 attempts</p>
+                        <p><strong>Solution:</strong></p>
+                        <ul>
+                            <li>Check email for correct OTP</li>
+                            <li>If exceeded attempts, call /resend-otp to get new OTP</li>
+                            <li>Ensure OTP hasn't expired (10 min from send)</li>
+                        </ul>
+
+                        <h4>❌ "Invalid credentials" on Login</h4>
+                        <p><strong>Cause:</strong> Wrong email/password OR account not approved</p>
+                        <p><strong>Solution:</strong></p>
+                        <ul>
+                            <li>Verify email and password are correct</li>
+                            <li>Check that email is verified and account is active</li>
+                            <li>Contact admin if account is pending approval</li>
+                        </ul>
+
+                        <h4>❌ 401 Unauthorized on API Calls</h4>
+                        <p><strong>Cause:</strong> Access token missing, invalid, or expired</p>
+                        <p><strong>Solution:</strong></p>
+                        <ul>
+                            <li>Verify user is logged in</li>
+                            <li>Check cookies in DevTools → Application → Cookies</li>
+                            <li>Implement token refresh interceptor</li>
+                            <li>Redirect to login if refresh fails</li>
+                        </ul>
+
+                        <h4>❌ 403 Forbidden on Specific Endpoints</h4>
+                        <p><strong>Cause:</strong> User role doesn't have permission</p>
+                        <p><strong>Solution:</strong></p>
+                        <ul>
+                            <li>Check user role in login response</li>
+                            <li>Verify you're accessing role-appropriate endpoints</li>
+                            <li>Show UI elements only for authorized roles</li>
+                        </ul>
+
+                        <h4>❌ Emails Not Being Received</h4>
+                        <p><strong>Cause:</strong> Email configuration issue or spam folder</p>
+                        <p><strong>Solution:</strong></p>
+                        <ul>
+                            <li>Check email in spam/junk folder</li>
+                            <li>Verify EMAIL_HOST settings in .env</li>
+                            <li>For Gmail: use App Password, not regular password</li>
+                            <li>Check server logs for email errors</li>
+                        </ul>
+
+                        <h4>❌ Rate Limiting (429 Error)</h4>
+                        <p><strong>Cause:</strong> Too many requests (10/min anon, 5/min user)</p>
+                        <p><strong>Solution:</strong></p>
+                        <ul>
+                            <li>Wait before retrying (check Retry-After header)</li>
+                            <li>Implement exponential backoff in frontend</li>
+                            <li>Add request debouncing for form submissions</li>
+                        </ul>
+                    </div>
+                </section>
+
+            </main>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <p><strong>Students Grade Management Dashboard</strong></p>
+        <p>API Documentation v1.0 | Generated: February 2026</p>
+        <p>For questions or issues, contact the development team</p>
+    </footer>
+
+</body>
+</html>

@@ -25,7 +25,7 @@ def set_pending_cookie(response, pending_token):
         key="verification_session",
         value=pending_token,
         httponly=True,
-        samesite="Lax",
+        samesite="None",
         max_age=900,  # 15 mins
-        # secure=True,
+        secure=True,
     )

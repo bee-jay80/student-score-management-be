@@ -25,7 +25,7 @@ def register_or_resend_otp(data):
 
     if user:
         if user.is_email_verified:
-            raise ValueError("Email already registered")
+            raise ValueError("Email already exists")
 
         # User exists but not verified → resend OTP
         user.first_name = data.get("first_name", user.first_name)

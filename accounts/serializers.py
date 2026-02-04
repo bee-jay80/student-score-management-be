@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
-from accounts.models import UserRole
+from accounts.models import UserRole, ImageUpload
 
 User = get_user_model()
 
@@ -49,3 +49,11 @@ class OTPVerifySerializer(serializers.Serializer):
 # OTP Resend Serializer
 class ResendOTPSerializer(serializers.Serializer):
     email = serializers.EmailField()
+
+
+class ImageUploadSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ImageUpload
+        fields = ['id', 'user', 'image', 'uploaded_at']
+        read_only_fields = ['id', 'user', 'uploaded_at']
+    
