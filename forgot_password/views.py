@@ -32,6 +32,12 @@ class ForgotPasswordRequestView(APIView):
                 status=status.HTTP_200_OK,
             )
 
+        if user.is_active is False:
+            return Response(
+                {"detail": "User account is inactive."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
         try:
             # rate limit: max 5 requests per 15 minutes per email using cache
             cache_key = f"forgot_otp:{email}"
