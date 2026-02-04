@@ -21,6 +21,12 @@ class Grade(models.Model):
         related_name="graded_scores"
     )
     updated_at = models.DateTimeField(auto_now=True)
+    updated_by = models.ForeignKey(
+        Teacher,
+        on_delete=models.SET_NULL,
+        null=True,
+        related_name="updated_grades"
+    )
 
     def __str__(self):
         return f"{self.enrollment.student.user.email} - {self.score}"
