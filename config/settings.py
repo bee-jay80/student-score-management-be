@@ -14,9 +14,11 @@ load_dotenv(os.path.join(BASE_DIR, ".env"))
 SECRET_KEY = os.getenv('DJANGO_SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.getenv("DEBUG")
+DEBUG = os.getenv("DEBUG").lower() in ("true", "1", "t")
 
-ALLOWED_HOSTS = []
+SECRET_KEY = os.getenv('DJANGO_SECRET_KEY')  # Must be secure
+ALLOWED_HOSTS = ['*']
+
 
 
 # Application definition
@@ -36,6 +38,7 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt.token_blacklist',
     'cloudinary',
     'corsheaders',
+    'drf_spectacular',
 
     'accounts',
     'notifications',
@@ -83,13 +86,20 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+# Default database if testing locally but online MYSQL database for production
+if DEBUG == True:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
     }
-}
-
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.'
+        }
+    }
 
 # Password validation
 # https://docs.djangoproject.com/en/6.0/ref/settings/#auth-password-validators
@@ -133,9 +143,9 @@ REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
     ],
-    "DEFAULT_AUTHENTICATION_CLASSES": (
+    "DEFAULT_AUTHENTICATION_CLASSES": [
         "accounts.authentication.CookieJWTAuthentication",
-    ),
+    ],
 
     "DEFAULT_THROTTLE_CLASSES": [
         "rest_framework.throttling.AnonRateThrottle",
@@ -145,7 +155,9 @@ REST_FRAMEWORK = {
         "anon": "10/min",
         "user": "5/min",
         "otp": "3/min",
+        "notifications": "30/min",
     },
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
 }
 
 
@@ -189,7 +201,7 @@ DEFAULT_FROM_EMAIL = os.getenv("EMAIL", default=EMAIL_HOST_USER or "webmaster@lo
 
 
 # Frontend Url
-FRONTEND_URL = os.getenv("FRONTEND_URL", default="http://localhost:5173")
+FRONTEND_URL = os.getenv("FRONTEND_URL", default="https://sfea.netlify.app")
 
 # Cloudinary Configuration
 import cloudinary
@@ -202,7 +214,8 @@ cloudinary.config(
 
 # CORS Configuration
 CORS_ALLOWED_ORIGINS = [
-    'http://localhost:5173'
+    'http://localhost:5173',
+    'https://sfea.netlify.app'
 ]
 
 CORS_ALLOW_CREDENTIALS = True
@@ -210,6 +223,7 @@ CORS_ALLOW_CREDENTIALS = True
 
 CSRF_TRUSTED_ORIGINS = [
     "http://localhost:5173",
+    "https://sfea.netlify.app"
 ]
 
 
@@ -217,3 +231,10 @@ CSRF_TRUSTED_ORIGINS = [
 # CSRF_COOKIE_SAMESITE = "Lax"
 # SESSION_COOKIE_SECURE = False
 # CSRF_COOKIE_SECURE = False
+# Security headers
+# SECURE_SSL_REDIRECT = True
+# SESSION_COOKIE_SECURE = True
+# CSRF_COOKIE_SECURE = True
+# SECURE_HSTS_SECONDS = 31536000
+# SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+# SECURE_HSTS_PRELOAD = True

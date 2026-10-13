@@ -725,6 +725,63 @@
                         <a href="#ep-me">GET /me</a>
                         <a href="#ep-test">GET /student-test</a>
                     </div>
+                    <a href="#courses-endpoints">Courses</a>
+                    <div class="toc-nested">
+                        <a href="#courses-list">GET /courses</a>
+                        <a href="#courses-create">POST /courses/create</a>
+                        <a href="#courses-detail">GET /courses/:id</a>
+                        <a href="#courses-update">PUT /courses/:id/update</a>
+                        <a href="#courses-delete">DELETE /courses/:id/delete</a>
+                        <a href="#courses-enroll">POST /courses/:id/enroll</a>
+                        <a href="#enrollment-detail">GET /enrollments/:id</a>
+                        <a href="#my-courses">GET /my-courses</a>
+                        <a href="#course-roles">GET /roles</a>
+                        <a href="#course-roles-create">POST /roles/create</a>
+                    </div>
+                    <a href="#students-endpoints">Students</a>
+                    <div class="toc-nested">
+                        <a href="#students-create">POST /students/create</a>
+                        <a href="#students-detail">GET /students/:id</a>
+                        <a href="#students-update">PUT /students/:id</a>
+                        <a href="#students-delete">DELETE /students/:id</a>
+                        <a href="#students-field-requests">GET /students/field-requests</a>
+                        <a href="#students-field-action">POST /students/field-requests/:id/action</a>
+                    </div>
+                    <a href="#teachers-endpoints">Teachers</a>
+                    <div class="toc-nested">
+                        <a href="#teachers-create">POST /teachers/create</a>
+                        <a href="#teachers-detail">GET /teachers/:id</a>
+                        <a href="#teachers-update">PUT /teachers/:id</a>
+                        <a href="#teachers-delete">DELETE /teachers/:id</a>
+                    </div>
+                    <a href="#grades-endpoints">Grades</a>
+                    <div class="toc-nested">
+                        <a href="#grades-list">GET /grades</a>
+                        <a href="#grades-create">POST /grades/create</a>
+                        <a href="#grades-detail">GET /grades/:id</a>
+                        <a href="#grades-teacher-list">GET /teacher/grades</a>
+                        <a href="#grades-student-list">GET /student/grades</a>
+                        <a href="#grades-course-stats">GET /courses/:id/stats</a>
+                        <a href="#grades-student-course-stats">GET /student/courses/:id/stats</a>
+                        <a href="#grades-teacher-detail">GET /teacher/grades/:id</a>
+                        <a href="#grades-student-detail">GET /student/grades/:id</a>
+                    </div>
+                    <a href="#notifications-endpoints">Notifications</a>
+                    <div class="toc-nested">
+                        <a href="#notifications-admin-list">GET /admin/notifications</a>
+                        <a href="#notifications-pending-users">GET /admin/pending-users</a>
+                        <a href="#notifications-approve-user">POST /admin/users/:id/approve</a>
+                        <a href="#notifications-reject-user">POST /admin/users/:id/reject</a>
+                        <a href="#notifications-student-grades">GET /student/grade-notifications</a>
+                        <a href="#notifications-grade-detail">GET /student/grade-notifications/:id</a>
+                        <a href="#notifications-grade-unread-count">GET /student/grade-notifications/unread-count</a>
+                        <a href="#notifications-mark-grade-read">PUT /student/grade-notifications/:id/read</a>
+                        <a href="#notifications-student-field-updates">GET /student/field-update-notifications</a>
+                        <a href="#notifications-admin-field-updates">GET /admin-teacher/field-update-notifications</a>
+                        <a href="#notifications-field-detail">GET /field-update-notifications/:id</a>
+                        <a href="#notifications-student-field-unread">GET /student/field-update-notifications/unread-count</a>
+                        <a href="#notifications-admin-field-unread">GET /admin-teacher/field-update-notifications/unread-count</a>
+                    </div>
                     <a href="#permissions">Permissions</a>
                     <a href="#responses">Response Codes</a>
                     <a href="#emails">Email Templates</a>
@@ -1912,6 +1969,849 @@ api.interceptors.response.use(
                     </div>
                 </section>
 
+                <!-- Courses Endpoints Section -->
+                <section id="courses-endpoints">
+                    <h2>📚 Courses Endpoints</h2>
+                    
+                    <div class="glass-card">
+                        <p class="text-muted">Manage courses, enrollments, and student-course relationships. Courses define curriculum and track student progress.</p>
+                    </div>
+
+                    <!-- List Courses -->
+                    <div class="endpoint-card" id="courses-list">
+                        <div class="endpoint-header">
+                            <span class="method-badge method-get">GET</span>
+                            <span class="endpoint-path">/api/courses/courses/</span>
+                        </div>
+                        
+                        <h4>List Active Courses</h4>
+                        <p>Returns paginated list of all active courses. Any authenticated user can view the course catalog.</p>
+
+                        <h4>Permissions:</h4>
+                        <div class="permissions">
+                            <span class="permission-chip">Authenticated</span>
+                        </div>
+
+                        <h4>Query Parameters:</h4>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Parameter</th>
+                                    <th>Type</th>
+                                    <th>Description</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>page</td>
+                                    <td>integer</td>
+                                    <td>Page number (default: 1)</td>
+                                </tr>
+                                <tr>
+                                    <td>limit</td>
+                                    <td>integer</td>
+                                    <td>Results per page (default: 10)</td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <h4>Success Response (200 OK):</h4>
+                        <div class="code-block" data-language="JSON">
+                            <code>[
+  {
+    <span class="key">"id"</span>: <span class="string">"course-uuid"</span>,
+    <span class="key">"title"</span>: <span class="string">"Mathematics 101"</span>,
+    <span class="key">"description"</span>: <span class="string">"Basic mathematics course"</span>,
+    <span class="key">"duration"</span>: <span class="number">12</span>,
+    <span class="key">"is_active"</span>: <span class="number">true</span>,
+    <span class="key">"created_at"</span>: <span class="string">"2024-01-15T10:30:00Z"</span>
+  }
+]</code>
+                        </div>
+
+                        <h4>How It Works:</h4>
+                        <ol>
+                            <li>Frontend sends GET request with auth token</li>
+                            <li>Backend filters courses where is_active=true</li>
+                            <li>Results are paginated (10 per page by default)</li>
+                            <li>Returns course details without sensitive data</li>
+                        </ol>
+
+                        <h4>Frontend Example:</h4>
+                        <div class="code-block" data-language="JavaScript">
+                            <code>const getCourses = async (page = 1) => {
+  const response = await fetch(
+    `/api/courses/courses/?page=${page}`,
+    { credentials: 'include' }
+  );
+  const courses = await response.json();
+  // Display courses in UI
+  displayCourses(courses);
+};</code>
+                        </div>
+                    </div>
+
+                    <!-- Create Course -->
+                    <div class="endpoint-card" id="courses-create">
+                        <div class="endpoint-header">
+                            <span class="method-badge method-post">POST</span>
+                            <span class="endpoint-path">/api/courses/courses/create/</span>
+                        </div>
+                        
+                        <h4>Create New Course</h4>
+                        <p>Creates a new course. Only teachers and admins can create courses.</p>
+
+                        <h4>Permissions:</h4>
+                        <div class="permissions">
+                            <span class="permission-chip teacher">Teacher</span>
+                            <span class="permission-chip admin">Admin</span>
+                        </div>
+
+                        <h4>Request Body:</h4>
+                        <div class="code-block" data-language="JSON">
+                            <code>{
+  <span class="key">"title"</span>: <span class="string">"Advanced Python"</span>,
+  <span class="key">"description"</span>: <span class="string">"Learn advanced Python concepts"</span>,
+  <span class="key">"duration"</span>: <span class="number">16</span>,
+  <span class="key">"field_id"</span>: <span class="string">"field-uuid"</span>
+}</code>
+                        </div>
+
+                        <h4>Required Fields:</h4>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Field</th>
+                                    <th>Type</th>
+                                    <th>Description</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>title <span class="badge badge-required">required</span></td>
+                                    <td>string</td>
+                                    <td>Course name (max 200 chars)</td>
+                                </tr>
+                                <tr>
+                                    <td>description <span class="badge badge-required">required</span></td>
+                                    <td>text</td>
+                                    <td>Course details</td>
+                                </tr>
+                                <tr>
+                                    <td>duration <span class="badge badge-required">required</span></td>
+                                    <td>integer</td>
+                                    <td>Course length in weeks</td>
+                                </tr>
+                                <tr>
+                                    <td>field_id <span class="badge badge-required">required</span></td>
+                                    <td>uuid</td>
+                                    <td>Study field UUID</td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <h4>Success Response (201 Created):</h4>
+                        <div class="code-block" data-language="JSON">
+                            <code>{
+  <span class="key">"id"</span>: <span class="string">"course-uuid"</span>,
+  <span class="key">"title"</span>: <span class="string">"Advanced Python"</span>,
+  <span class="key">"description"</span>: <span class="string">"Learn advanced Python concepts"</span>,
+  <span class="key">"duration"</span>: <span class="number">16</span>,
+  <span class="key">"is_active"</span>: <span class="number">true</span>,
+  <span class="key">"created_at"</span>: <span class="string">"2024-02-07T14:22:00Z"</span>
+}</code>
+                        </div>
+
+                        <h4>Error Responses:</h4>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Status</th>
+                                    <th>Response</th>
+                                    <th>Reason</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>400</strong></td>
+                                    <td>{ "detail": "Missing required field" }</td>
+                                    <td>Missing title, description, duration, or field_id</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>401</strong></td>
+                                    <td>{ "detail": "Authentication credentials were not provided." }</td>
+                                    <td>No auth token provided</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>403</strong></td>
+                                    <td>{ "detail": "You do not have permission to perform this action." }</td>
+                                    <td>User is not teacher or admin</td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <h4>How It Works:</h4>
+                        <ol>
+                            <li>Teacher/Admin sends course data with auth token</li>
+                            <li>Backend validates required fields</li>
+                            <li>Course is created with is_active=true</li>
+                            <li>Returns created course with UUID</li>
+                            <li>Course immediately visible in course lists</li>
+                        </ol>
+
+                        <h4>Frontend Example:</h4>
+                        <div class="code-block" data-language="JavaScript">
+                            <code>const createCourse = async (courseData) => {
+  try {
+    const response = await fetch('/api/courses/courses/create/', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify(courseData),
+      credentials: 'include'
+    });
+    
+    if (response.status === 201) {
+      const course = await response.json();
+      showSuccess('Course created successfully');
+      return course;
+    } else {
+      const errors = await response.json();
+      showError(errors.detail || 'Creation failed');
+    }
+  } catch (err) {
+    console.error('Error:', err);
+  }
+};</code>
+                        </div>
+                    </div>
+
+                    <!-- Course Detail -->
+                    <div class="endpoint-card" id="courses-detail">
+                        <div class="endpoint-header">
+                            <span class="method-badge method-get">GET</span>
+                            <span class="endpoint-path">/api/courses/courses/{course_id}/</span>
+                        </div>
+                        
+                        <h4>Get Course Details</h4>
+                        <p>Retrieves full details of a specific active course.</p>
+
+                        <h4>Permissions:</h4>
+                        <div class="permissions">
+                            <span class="permission-chip">Authenticated</span>
+                        </div>
+
+                        <h4>Path Parameters:</h4>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Parameter</th>
+                                    <th>Type</th>
+                                    <th>Description</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>course_id <span class="badge badge-required">required</span></td>
+                                    <td>uuid</td>
+                                    <td>Course UUID</td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <h4>Success Response (200 OK):</h4>
+                        <div class="code-block" data-language="JSON">
+                            <code>{
+  <span class="key">"id"</span>: <span class="string">"course-uuid"</span>,
+  <span class="key">"title"</span>: <span class="string">"Mathematics 101"</span>,
+  <span class="key">"description"</span>: <span class="string">"Basic mathematics course"</span>,
+  <span class="key">"duration"</span>: <span class="number">12</span>,
+  <span class="key">"field"</span>: {
+    <span class="key">"id"</span>: <span class="string">"field-uuid"</span>,
+    <span class="key">"name"</span>: <span class="string">"Mathematics"</span>
+  },
+  <span class="key">"is_active"</span>: <span class="number">true</span>,
+  <span class="key">"created_at"</span>: <span class="string">"2024-01-15T10:30:00Z"</span>,
+  <span class="key">"updated_at"</span>: <span class="string">"2024-02-07T14:22:00Z"</span>
+}</code>
+                        </div>
+
+                        <h4>Error Responses:</h4>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Status</th>
+                                    <th>Response</th>
+                                    <th>Reason</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>404</strong></td>
+                                    <td>{ "detail": "Course not found." }</td>
+                                    <td>Course ID doesn't exist or is inactive</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>401</strong></td>
+                                    <td>{ "detail": "Authentication credentials were not provided." }</td>
+                                    <td>Not authenticated</td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <h4>Frontend Example:</h4>
+                        <div class="code-block" data-language="JavaScript">
+                            <code>const getCourseDetails = async (courseId) => {
+  const response = await fetch(`/api/courses/courses/${courseId}/`, {
+    credentials: 'include'
+  });
+  
+  if (response.ok) {
+    const course = await response.json();
+    displayCourseDetails(course);
+  }
+};</code>
+                        </div>
+                    </div>
+
+                    <!-- Update Course -->
+                    <div class="endpoint-card" id="courses-update">
+                        <div class="endpoint-header">
+                            <span class="method-badge method-put">PUT</span>
+                            <span class="endpoint-path">/api/courses/courses/{course_id}/update/</span>
+                        </div>
+                        
+                        <h4>Update Course</h4>
+                        <p>Updates course details. Only the course creator (teacher/admin) can update.</p>
+
+                        <h4>Permissions:</h4>
+                        <div class="permissions">
+                            <span class="permission-chip teacher">Teacher</span>
+                            <span class="permission-chip admin">Admin</span>
+                        </div>
+
+                        <h4>Request Body (all fields optional):</h4>
+                        <div class="code-block" data-language="JSON">
+                            <code>{
+  <span class="key">"title"</span>: <span class="string">"Updated Course Title"</span>,
+  <span class="key">"description"</span>: <span class="string">"Updated description"</span>,
+  <span class="key">"duration"</span>: <span class="number">14</span>
+}</code>
+                        </div>
+
+                        <h4>Success Response (200 OK):</h4>
+                        <div class="code-block" data-language="JSON">
+                            <code>{
+  <span class="key">"id"</span>: <span class="string">"course-uuid"</span>,
+  <span class="key">"title"</span>: <span class="string">"Updated Course Title"</span>,
+  <span class="key">"description"</span>: <span class="string">"Updated description"</span>,
+  <span class="key">"duration"</span>: <span class="number">14</span>,
+  <span class="key">"is_active"</span>: <span class="number">true</span>,
+  <span class="key">"updated_at"</span>: <span class="string">"2024-02-07T15:45:00Z"</span>
+}</code>
+                        </div>
+
+                        <h4>Frontend Example:</h4>
+                        <div class="code-block" data-language="JavaScript">
+                            <code>const updateCourse = async (courseId, updates) => {
+  const response = await fetch(
+    `/api/courses/courses/${courseId}/update/`,
+    {
+      method: 'PUT',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify(updates),
+      credentials: 'include'
+    }
+  );
+  
+  if (response.ok) {
+    return await response.json();
+  }
+};</code>
+                        </div>
+                    </div>
+
+                    <!-- Delete Course -->
+                    <div class="endpoint-card" id="courses-delete">
+                        <div class="endpoint-header">
+                            <span class="method-badge method-delete">DELETE</span>
+                            <span class="endpoint-path">/api/courses/courses/{course_id}/delete/</span>
+                        </div>
+                        
+                        <h4>Delete Course (Soft Delete)</h4>
+                        <p>Soft-deletes a course by setting is_active=false. Course remains in database but won't appear in listings.</p>
+
+                        <h4>Permissions:</h4>
+                        <div class="permissions">
+                            <span class="permission-chip teacher">Teacher</span>
+                            <span class="permission-chip admin">Admin</span>
+                        </div>
+
+                        <h4>Success Response (204 No Content):</h4>
+                        <p>HTTP 204 with no body</p>
+
+                        <h4>How It Works:</h4>
+                        <ol>
+                            <li>Teacher/Admin sends DELETE request</li>
+                            <li>Backend finds course by ID</li>
+                            <li>Sets is_active=false (not truly deleted)</li>
+                            <li>Course removed from all listings</li>
+                            <li>Historical data and enrollments preserved</li>
+                        </ol>
+
+                        <h4>Frontend Example:</h4>
+                        <div class="code-block" data-language="JavaScript">
+                            <code>const deleteCourse = async (courseId) => {
+  const response = await fetch(
+    `/api/courses/courses/${courseId}/delete/`,
+    { method: 'DELETE', credentials: 'include' }
+  );
+  
+  if (response.status === 204) {
+    showSuccess('Course deleted successfully');
+  }
+};</code>
+                        </div>
+                    </div>
+
+                    <!-- Enroll Student -->
+                    <div class="endpoint-card" id="courses-enroll">
+                        <div class="endpoint-header">
+                            <span class="method-badge method-post">POST</span>
+                            <span class="endpoint-path">/api/courses/courses/{course_id}/enroll/</span>
+                        </div>
+                        
+                        <h4>Enroll Student in Course</h4>
+                        <p>Enrolls the authenticated student in a course. Creates an Enrollment record linking student to course.</p>
+
+                        <h4>Permissions:</h4>
+                        <div class="permissions">
+                            <span class="permission-chip student">Student</span>
+                            <span class="permission-chip admin">Admin</span>
+                        </div>
+
+                        <h4>Request Body:</h4>
+                        <div class="code-block" data-language="JSON">
+                            <code>{
+  <span class="key">"course_id"</span>: <span class="string">"course-uuid"</span>
+}</code>
+                        </div>
+
+                        <h4>Success Response (201 Created):</h4>
+                        <div class="code-block" data-language="JSON">
+                            <code>{
+  <span class="key">"id"</span>: <span class="string">"enrollment-uuid"</span>,
+  <span class="key">"student_id"</span>: <span class="string">"student-uuid"</span>,
+  <span class="key">"course_id"</span>: <span class="string">"course-uuid"</span>,
+  <span class="key">"enrolled_at"</span>: <span class="string">"2024-02-07T16:00:00Z"</span>,
+  <span class="key">"status"</span>: <span class="string">"active"</span>
+}</code>
+                        </div>
+
+                        <h4>Error Responses:</h4>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Status</th>
+                                    <th>Response</th>
+                                    <th>Reason</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>400</strong></td>
+                                    <td>{ "detail": "Student already enrolled" }</td>
+                                    <td>Duplicate enrollment attempt</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>404</strong></td>
+                                    <td>{ "detail": "Course not found" }</td>
+                                    <td>Invalid course ID</td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <h4>How It Works:</h4>
+                        <ol>
+                            <li>Student sends enrollment request with course ID</li>
+                            <li>Backend checks if student already enrolled</li>
+                            <li>Creates Enrollment record linking student & course</li>
+                            <li>Returns enrollment confirmation</li>
+                            <li>Student now sees course in my-courses listing</li>
+                        </ol>
+
+                        <h4>Frontend Example:</h4>
+                        <div class="code-block" data-language="JavaScript">
+                            <code>const enrollCourse = async (courseId) => {
+  const response = await fetch('/api/courses/courses/enroll/', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({course_id: courseId}),
+    credentials: 'include'
+  });
+  
+  if (response.status === 201) {
+    showSuccess('Enrolled successfully');
+    refreshStudentCourses();
+  } else if (response.status === 400) {
+    showError('Already enrolled in this course');
+  }
+};</code>
+                        </div>
+                    </div>
+
+                    <!-- Enrollment Detail -->
+                    <div class="endpoint-card" id="enrollment-detail">
+                        <div class="endpoint-header">
+                            <span class="method-badge method-get">GET</span>
+                            <span class="endpoint-path">/api/courses/enrollments/{enrollment_id}/</span>
+                        </div>
+                        
+                        <h4>Get Enrollment Details</h4>
+                        <p>Retrieves details of a specific student enrollment record.</p>
+
+                        <h4>Permissions:</h4>
+                        <div class="permissions">
+                            <span class="permission-chip student">Student (own enrollments)</span>
+                            <span class="permission-chip admin">Admin</span>
+                        </div>
+
+                        <h4>Success Response (200 OK):</h4>
+                        <div class="code-block" data-language="JSON">
+                            <code>{
+  <span class="key">"id"</span>: <span class="string">"enrollment-uuid"</span>,
+  <span class="key">"student"</span>: {
+    <span class="key">"id"</span>: <span class="string">"student-uuid"</span>,
+    <span class="key">"user"</span>: {
+      <span class="key">"first_name"</span>: <span class="string">"John"</span>,
+      <span class="key">"last_name"</span>: <span class="string">"Doe"</span>
+    }
+  },
+  <span class="key">"course"</span>: {
+    <span class="key">"id"</span>: <span class="string">"course-uuid"</span>,
+    <span class="key">"title"</span>: <span class="string">"Mathematics 101"</span>
+  },
+  <span class="key">"enrolled_at"</span>: <span class="string">"2024-02-07T16:00:00Z"</span>,
+  <span class="key">"status"</span>: <span class="string">"active"</span>
+}</code>
+                        </div>
+
+                        <h4>Frontend Example:</h4>
+                        <div class="code-block" data-language="JavaScript">
+                            <code>const getEnrollmentDetail = async (enrollmentId) => {
+  const response = await fetch(
+    `/api/courses/enrollments/${enrollmentId}/`,
+    { credentials: 'include' }
+  );
+  
+  if (response.ok) {
+    const enrollment = await response.json();
+    displayEnrollmentInfo(enrollment);
+  }
+};</code>
+                        </div>
+                    </div>
+
+                    <!-- My Courses -->
+                    <div class="endpoint-card" id="my-courses">
+                        <div class="endpoint-header">
+                            <span class="method-badge method-get">GET</span>
+                            <span class="endpoint-path">/api/courses/my-courses/</span>
+                        </div>
+                        
+                        <h4>Get My Courses (Student)</h4>
+                        <p>Returns courses available and matching the authenticated student's month and fields. Used to populate student's course feed.</p>
+
+                        <h4>Permissions:</h4>
+                        <div class="permissions">
+                            <span class="permission-chip student">Student</span>
+                        </div>
+
+                        <h4>How It Works:</h4>
+                        <ol>
+                            <li>Student requests their filtered course list</li>
+                            <li>Backend gets student's current month_used value</li>
+                            <li>Backend gets student's fields (study areas)</li>
+                            <li>Filters courses: is_active=true AND duration >= month_used AND field in student_fields</li>
+                            <li>Returns only matching courses</li>
+                        </ol>
+
+                        <h4>Success Response (200 OK):</h4>
+                        <div class="code-block" data-language="JSON">
+                            <code>[
+  {
+    <span class="key">"id"</span>: <span class="string">"course-uuid"</span>,
+    <span class="key">"title"</span>: <span class="string">"Advanced Mathematics"</span>,
+                    <!-- My Courses -->
+                    <div class="endpoint-card" id="my-courses">
+                        <div class="endpoint-header">
+                            <span class="method-badge method-get">GET</span>
+                            <span class="endpoint-path">/api/courses/my-courses/</span>
+                        </div>
+                        
+                        <h4>Get Student's Available Courses</h4>
+                        <p>Retrieves courses filtered by the student's month_used and assigned fields/specializations. Only shows courses where the student's current month >= course field duration AND course field is in their fields list.</p>
+
+                        <h4>Permissions:</h4>
+                        <div class="permissions">
+                            <span class="permission-chip student">Student</span>
+                        </div>
+
+                        <h4>Success Response (200 OK):</h4>
+                        <div class="code-block" data-language="JSON">
+                            <code>[
+  {
+    <span class="key">"id"</span>: <span class="string">"course-uuid"</span>,
+    <span class="key">"title"</span>: <span class="string">"Backend Development Basics"</span>,
+    <span class="key">"description"</span>: <span class="string">"Learn backend fundamentals"</span>,
+    <span class="key">"duration"</span>: <span class="number">3</span>,
+    <span class="key">"field"</span>: {
+      <span class="key">"id"</span>: <span class="string">"field-uuid"</span>,
+      <span class="key">"name"</span>: <span class="string">"Backend Development"</span>,
+      <span class="key">"duration"</span>: <span class="number">6</span>,
+      <span class="key">"status"</span>: <span class="string">"ongoing"</span>
+    },
+    <span class="key">"is_active"</span>: <span class="number">true</span>
+  }
+]</code>
+                        </div>
+
+                        <h4>Filtering Logic:</h4>
+                        <ol>
+                            <li>Student's current <strong>month_used</strong> is fetched from their profile</li>
+                            <li>Student's assigned <strong>fields</strong> (specializations) are retrieved</li>
+                            <li>Query filters: <strong>course.field.duration >= student.month_used AND course.field IN student.fields</strong></li>
+                            <li>Only active courses are returned</li>
+                        </ol>
+
+                        <h4>Example Scenario:</h4>
+                        <p><strong>Student with month_used=6 and fields=[&quot;Backend Development&quot;, &quot;Data Science&quot;]:</strong></p>
+                        <ul>
+                            <li>Sees courses assigned to Backend Development (if duration >= 6) and Data Science (if duration >= 6)</li>
+                            <li>Cannot see courses from other fields like &quot;Frontend Development&quot;</li>
+                            <li>As month_used progresses, more courses become available</li>
+                        </ul>
+
+                        <h4>Frontend Example:</h4>
+                        <div class="code-block" data-language="JavaScript">
+                            <code>const getMyAvailableCourses = async () => {
+  const response = await fetch('/api/courses/my-courses/', {
+    credentials: 'include'
+  });
+  
+  if (response.ok) {
+    const courses = await response.json();
+    // Display courses matched to student's level
+    displayStudentCourses(courses);
+  }
+};</code>
+                        </div>
+                    </div>
+
+                    <!-- Course Roles -->
+                    <div class="endpoint-card" id="course-roles">
+                        <div class="endpoint-header">
+                            <span class="method-badge method-get">GET</span>
+                            <span class="endpoint-path">/api/courses/roles/</span>
+                        </div>
+                        
+                        <h4>List Course Roles/Fields</h4>
+                        <p>Returns all available course roles (study fields/specializations) that can be assigned to courses and students.</p>
+
+                        <h4>Permissions:</h4>
+                        <div class="permissions">
+                            <span class="permission-chip">Authenticated</span>
+                        </div>
+
+                        <h4>Success Response (200 OK):</h4>
+                        <div class="code-block" data-language="JSON">
+                            <code>[
+  {
+    <span class="key">"id"</span>: <span class="string">"field-uuid"</span>,
+    <span class="key">"name"</span>: <span class="string">"Backend Development"</span>,
+    <span class="key">"description"</span>: <span class="string">"Server-side development and API design"</span>,
+    <span class="key">"duration"</span>: <span class="number">6</span>,
+    <span class="key">"status"</span>: <span class="string">"ongoing"</span>,
+    <span class="key">"created_at"</span>: <span class="string">"2024-01-20T10:00:00Z"</span>
+  },
+  {
+    <span class="key">"id"</span>: <span class="string">"field-uuid"</span>,
+    <span class="key">"name"</span>: <span class="string">"Data Science"</span>,
+    <span class="key">"description"</span>: <span class="string">"Machine learning and data analysis"</span>,
+    <span class="key">"duration"</span>: <span class="number\">8</span>,
+    <span class="key">"status"</span>: <span class="string">"ongoing"</span>,
+    <span class="key">"created_at"</span>: <span class="string">"2024-01-20T10:00:00Z"</span>
+  }
+]</code>
+                        </div>
+
+                        <h4>Field Meanings:</h4>
+                        <ul>
+                            <li><strong>duration:</strong> Month when students can access courses in this field (e.g., 6 = accessible at month 6+)</li>
+                            <li><strong>status:</strong> Progression status (ongoing, completed, failed) - updated when students complete all courses in the field</li>
+                        </ul>
+
+                        <h4>Frontend Example:</h4>
+                        <div class="code-block" data-language="JavaScript">
+                            <code>const getCourseRoles = async () => {
+  const response = await fetch('/api/courses/roles/', {
+    credentials: 'include'
+  });
+  
+  if (response.ok) {
+    const roles = await response.json();
+    // Use for role selector dropdowns
+    populateRoleDropdown(roles);
+  }
+};</code>
+                        </div>
+                    </div>
+
+                    <!-- Create Course Role -->
+                    <div class="endpoint-card" id="course-roles-create">
+                        <div class="endpoint-header">
+                            <span class="method-badge method-post">POST</span>
+                            <span class="endpoint-path">/api/courses/roles/create/</span>
+                        </div>
+                        
+                        <h4>Create Course Role/Field</h4>
+                        <p>Creates a new course role (specialization/field) that can be assigned to courses. These represent study fields or specializations like Frontend, Backend, Data Science, etc.</p>
+
+                        <h4>Permissions:</h4>
+                        <div class="permissions">
+                            <span class="permission-chip admin">Admin</span>
+                        </div>
+
+                        <h4>Request Body:</h4>
+                        <div class="code-block" data-language="JSON">
+                            <code>{
+  <span class="key">"name"</span>: <span class="string">"Backend Development"</span>,
+  <span class="key">"description"</span>: <span class="string">"Server-side development and API design"</span>,
+  <span class="key">"duration"</span>: <span class="number">6</span>
+}</code>
+                        </div>
+
+                        <h4>Required Fields:</h4>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Field</th>
+                                    <th>Type</th>
+                                    <th>Description</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>name <span class="badge badge-required">required</span></td>
+                                    <td>string</td>
+                                    <td>Field/specialization name (e.g., "Frontend", "Backend", "Data Science")</td>
+                                </tr>
+                                <tr>
+                                    <td>description <span class="badge badge-optional">optional</span></td>
+                                    <td>text</td>
+                                    <td>Detailed description of the field or specialization</td>
+                                </tr>
+                                <tr>
+                                    <td>duration <span class="badge badge-required">required</span></td>
+                                    <td>integer</td>
+                                    <td>Duration in months when students access courses (e.g., 6 = month 6+)</td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <h4>Success Response (201 Created):</h4>
+                        <div class="code-block" data-language="JSON">
+                            <code>{
+  <span class="key">"id"</span>: <span class="string">"role-uuid"</span>,
+  <span class="key">"name"</span>: <span class="string">"Backend Development"</span>,
+  <span class="key">"description"</span>: <span class="string">"Server-side development and API design"</span>,
+  <span class="key">"duration"</span>: <span class="number">6</span>,
+  <span class="key">"status"</span>: <span class="string">"ongoing"</span>,
+  <span class="key">"created_at"</span>: <span class="string">"2024-02-07T16:30:00Z"</span>,
+  <span class="key">"updated_at"</span>: <span class="string">"2024-02-07T16:30:00Z"</span>
+}</code>
+                        </div>
+
+                        <h4>Error Responses:</h4>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Status</th>
+                                    <th>Response</th>
+                                    <th>Reason</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>400</strong></td>
+                                    <td>{ "detail": "Missing required field: name" }</td>
+                                    <td>Field name not provided</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>400</strong></td>
+                                    <td>{ "detail": "CourseRole with this name already exists" }</td>
+                                    <td>Duplicate field/role name</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>401</strong></td>
+                                    <td>{ "detail": "Authentication credentials were not provided." }</td>
+                                    <td>No auth token provided</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>403</strong></td>
+                                    <td>{ "detail": "You do not have permission to perform this action." }</td>
+                                    <td>User is not admin</td>
+                                </tr>, optional description, and duration (in months)</li>
+                            <li>Duration indicates when students can access courses in this field (e.g., duration=6 means accessible at month 6+)</li>
+                            <li>Backend validates required fields (name and duration)</li>
+                            <li>Checks if field name already exists (prevents duplicates)</li>
+                            <li>Creates new CourseRole record with UUID and status="ongoing"</li>
+                            <li>Returns created field data with timestamps</li>
+                            <li>Field immediately available to assign to courses for progression track
+                            <li>Admin sends field/specialization data with name and optional description</li>
+                            <li>Backend validates required fields</li>
+                            <li>Checks if field name already exists (prevents duplicates)</li>
+                            <li>Creates new CourseRole record with UUID</li>
+                            <li>Returns created field data</li>
+                            <li>Field immediately available to assign to courses for organization and filtering</li>
+                        </ol>
+
+                        <h4>Frontend Example:</h4>
+                        <div class="code-block" data-language="JavaScript">
+                            <code>const createCourseField = async (fieldData) => {
+  try {
+    const response = await fetch('/api/courses/roles/create/', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify(fieldData),
+      credentials: 'include'
+    });
+    
+    if (response.status === 201) {
+      const field = await response.json();
+      showSuccess('Field created successfully');
+      refreshAvailableFields();
+      return field;
+    } else if (response.status === 400) {
+      const errors = await response.json();
+      showError(errors.detail || 'Invalid field data');
+    }
+  } catch (err) {
+    console.error('Error creating field:', err);
+  }
+};</code>
+                        </div>
+
+                        <h4>Common Use Cases:</h4>
+                        <ul>
+                            <li><strong>Create "Frontend Development":</strong> HTML, CSS, JavaScript courses</li>
+                            <li><strong>Create "Backend Development":</strong> Server, API, database courses</li>
+                            <li><strong>Create "Data Science":</strong> Machine learning and data analysis courses</li>
+                            <li><strong>Create "Data Analysis":</strong> Statistics and data visualization courses</li>
+                            <li><strong>Create "DevOps":</strong> Deployment and infrastructure courses</li>
+                        </ul>
+                    </div>
+                </section>
+
                 <!-- Permissions Section -->
                 <section id="permissions">
                     <h2>🔑 Permissions & Access Control</h2>
@@ -2967,8 +3867,2116 @@ try {
             </main>
         </div>
     </div>
+        <!-- Consolidated API Summary (auto-generated) -->
+        <section id="api-summary" class="glass-card">
+                <h2>📚 API Summary (Consolidated)</h2>
+                <p class="text-muted">This section summarizes all discovered API endpoints with example payloads and responses to help frontend integration. Paths are relative to the API base (<strong>/api/</strong>).</p>
 
-    <!-- Footer -->
+                <div class="endpoint-card">
+                        <h3>Accounts</h3>
+                        <div class="code-block" data-language="text">
+<code>
+POST /api/auth/register/
+    - Description: Create user account and send OTP for email verification.
+    - Payload: {"email":"user@example.com","first_name":"John","last_name":"Doe","password":"Secret123!"}
+    - Success: 201, verification_session cookie set.
+
+POST /api/auth/login/
+    - Payload: {"email":"user@example.com","password":"Secret123!"}
+    - Success: 200 + sets access/refresh cookies; returns {id,email,role}
+
+POST /api/auth/verify-otp/
+    - Payload: {"otp":"123456"}
+    - Success: 200 "Email verified successfully"
+
+POST /api/auth/resend-otp/
+    - Uses verification_session cookie. Success: 200
+
+GET  /api/auth/me/
+    - Returns current user: {id,email,first_name,last_name,role}
+
+POST /api/auth/logout/
+    - Clears auth cookies. Success: 204
+
+POST /api/auth/image-upload/  (multipart)
+GET/PUT/DELETE /api/auth/image-upload/<image_id>/
+</code>
+                        </div>
+                </div>
+
+                <div class="endpoint-card">
+                        <h3>Courses</h3>
+                        <div class="code-block" data-language="text">
+<code>
+GET  /api/courses/courses/                    - List active courses
+POST /api/courses/courses/create/             - Create course (teacher/admin)
+GET  /api/courses/courses/<course_id>/         - Course detail
+PUT  /api/courses/courses/<course_id>/update/  - Update course (teacher/admin)
+DELETE /api/courses/courses/<course_id>/delete/ - Soft-delete
+POST /api/courses/courses/<course_id>/enroll/  - Enroll student
+GET  /api/courses/enrollments/<enrollment_id>/ - Enrollment detail
+GET  /api/courses/my-courses/                  - Student filtered courses
+GET  /api/courses/roles/                       - List CourseRole
+POST /api/courses/roles/create/                - Create CourseRole (admin only)
+</code>
+                        </div>
+                </div>
+
+                <div class="endpoint-card">
+                        <h3>Students</h3>
+                        <div class="code-block" data-language="text">
+<code>
+POST /api/students/students/create/            - Create student profile
+GET  /api/students/students/<student_id>/       - Get student
+PUT  /api/students/students/<student_id>/       - Update student (supports requested_role_id flow)
+DELETE /api/students/students/<student_id>/    - Delete student
+GET  /api/students/students/field-requests/    - Admin/Teacher: list field update requests
+POST /api/students/students/field-requests/<request_id>/action/ - Approve/reject request
+    - Body: {"action":"approve"|"reject","message":"optional"}
+</code>
+                        </div>
+                </div>
+
+                <!-- Students Endpoints Section -->
+                <section id="students-endpoints">
+                    <h2>👨‍🎓 STUDENTS API</h2>
+                    <div class="glass-card">
+                        <p class="text-muted">Endpoints for managing student profiles, tracking learning progress (month_used), and handling field specialization requests. Students can request field changes which admins/teachers review and approve.</p>
+                    </div>
+
+                    <!-- Create Student -->
+                    <div class="endpoint-card" id="students-create">
+                        <div class="endpoint-header">
+                            <span class="method-badge method-post">POST</span>
+                            <span class="endpoint-path">/api/students/students/create/</span>
+                        </div>
+                        
+                        <h4>Create Student Profile</h4>
+                        <p>Creates a new student profile linked to an authenticated user account.</p>
+
+                        <h4>Permissions:</h4>
+                        <div class="permissions">
+                            <span class="permission-chip student">Student</span>
+                            <span class="permission-chip teacher">Teacher</span>
+                            <span class="permission-chip admin">Admin</span>
+                        </div>
+
+                        <h4>Request Body:</h4>
+                        <div class="code-block" data-language="JSON">
+                            <code>{
+  <span class="key">"user"</span>: <span class="string">"user-uuid"</span>,
+  <span class="key">"matric_no"</span>: <span class="string">"STU-2024-001"</span>,
+  <span class="key">"branch_location"</span>: <span class="string">"Main Campus"</span>,
+  <span class="key">"phone_number"</span>: <span class="string">"+1234567890"</span>,
+  <span class="key">"address"</span>: <span class="string">"123 Student Street, City"</span>,
+  <span class="key">"gender"</span>: <span class="string">"male"</span>,
+  <span class="key">"date_of_birth"</span>: <span class="string">"2005-01-15"</span>
+}</code>
+                        </div>
+
+                        <h4>Required Fields:</h4>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Field</th>
+                                    <th>Type</th>
+                                    <th>Description</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>user <span class="badge badge-required">required</span></td>
+                                    <td>uuid</td>
+                                    <td>User ID to link to this student profile</td>
+                                </tr>
+                                <tr>
+                                    <td>matric_no <span class="badge badge-required">required</span></td>
+                                    <td>string</td>
+                                    <td>Unique matriculation number</td>
+                                </tr>
+                                <tr>
+                                    <td>branch_location <span class="badge badge-optional">optional</span></td>
+                                    <td>string</td>
+                                    <td>Campus or branch location</td>
+                                </tr>
+                                <tr>
+                                    <td>phone_number <span class="badge badge-optional">optional</span></td>
+                                    <td>string</td>
+                                    <td>Contact phone number</td>
+                                </tr>
+                                <tr>
+                                    <td>address <span class="badge badge-optional">optional</span></td>
+                                    <td>string</td>
+                                    <td>Student's address</td>
+                                </tr>
+                                <tr>
+                                    <td>gender <span class="badge badge-optional">optional</span></td>
+                                    <td>string</td>
+                                    <td>male | female | others</td>
+                                </tr>
+                                <tr>
+                                    <td>date_of_birth <span class="badge badge-optional">optional</span></td>
+                                    <td>date</td>
+                                    <td>YYYY-MM-DD format</td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <h4>Success Response (201 Created):</h4>
+                        <div class="code-block" data-language="JSON">
+                            <code>{
+  <span class="key">"id"</span>: <span class="string">"student-uuid"</span>,
+  <span class="key">"user"</span>: <span class="string">"user-uuid"</span>,
+  <span class="key">"matric_no"</span>: <span class="string">"STU-2024-001"</span>,
+  <span class="key">"branch_location"</span>: <span class="string">"Main Campus"</span>,
+  <span class="key">"phone_number"</span>: <span class="string">"+1234567890"</span>,
+  <span class="key">"address"</span>: <span class="string">"123 Student Street, City"</span>,
+  <span class="key">"gender"</span>: <span class="string">"male"</span>,
+  <span class="key">"date_of_birth"</span>: <span class="string">"2005-01-15"</span>,
+  <span class="key">"enrolled_at"</span>: <span class="string">"2024-02-07T16:45:00Z"</span>
+}</code>
+                        </div>
+
+                        <h4>Frontend Example:</h4>
+                        <div class="code-block" data-language="JavaScript">
+                            <code>const createStudentProfile = async (profileData) => {
+  const response = await fetch('/api/students/students/create/', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify(profileData),
+    credentials: 'include'
+  });
+  
+  if (response.status === 201) {
+    const student = await response.json();
+    showSuccess('Student profile created');
+    return student;
+  }
+};</code>
+                        </div>
+                    </div>
+
+                    <!-- Get Student Detail -->
+                    <div class="endpoint-card" id="students-detail">
+                        <div class="endpoint-header">
+                            <span class="method-badge method-get">GET</span>
+                            <span class="endpoint-path">/api/students/students/{student_id}/</span>
+                        </div>
+                        
+                        <h4>Get Student Profile</h4>
+                        <p>Retrieves a student's profile including current fields (specializations) and enrollment information. Students can only view their own profile; admins/teachers can view any.</p>
+
+                        <h4>Permissions:</h4>
+                        <div class="permissions">
+                            <span class="permission-chip student">Student (own only)</span>
+                            <span class="permission-chip teacher">Teacher</span>
+                            <span class="permission-chip admin">Admin</span>
+                        </div>
+
+                        <h4>Success Response (200 OK):</h4>
+                        <div class="code-block" data-language="JSON">
+                            <code>{
+  <span class="key">"id"</span>: <span class="string">"student-uuid"</span>,
+  <span class="key">"user"</span>: <span class="string">"user-uuid"</span>,
+  <span class="key">"matric_no"</span>: <span class="string">"STU-2024-001"</span>,
+  <span class="key">"branch_location"</span>: <span class="string">"Main Campus"</span>,
+  <span class="key">"phone_number"</span>: <span class="string">"+1234567890"</span>,
+  <span class="key">"address"</span>: <span class="string">"123 Student Street, City"</span>,
+  <span class="key">"gender"</span>: <span class="string">"male"</span>,
+  <span class="key">"date_of_birth"</span>: <span class="string">"2005-01-15"</span>,
+  <span class="key">"enrolled_at"</span>: <span class="string">"2024-02-07T16:45:00Z"</span>
+}</code>
+                        </div>
+
+                        <h4>Frontend Example:</h4>
+                        <div class="code-block" data-language="JavaScript">
+                            <code>const getStudentProfile = async (studentId) => {
+  const response = await fetch(`/api/students/students/${studentId}/`, {
+    credentials: 'include'
+  });
+  
+  if (response.ok) {
+    const student = await response.json();
+    displayStudentProfile(student);
+  }
+};</code>
+                        </div>
+                    </div>
+
+                    <!-- Update Student -->
+                    <div class="endpoint-card" id="students-update">
+                        <div class="endpoint-header">
+                            <span class="method-badge method-put">PUT</span>
+                            <span class="endpoint-path">/api/students/students/{student_id}/</span>
+                        </div>
+                        
+                        <h4>Update Student Profile / Request Field Change</h4>
+                        <p>Updates student profile fields OR creates a field update request. If <strong>requested_role_id</strong> is provided, creates a request for admin/teacher review instead of immediate update.</p>
+
+                        <h4>Permissions:</h4>
+                        <div class="permissions">
+                            <span class="permission-chip student">Student (own only)</span>
+                            <span class="permission-chip teacher">Teacher</span>
+                            <span class="permission-chip admin">Admin</span>
+                        </div>
+
+                        <h4>Request Body (Profile Update):</h4>
+                        <div class="code-block" data-language="JSON">
+                            <code>{
+  <span class="key">"phone_number"</span>: <span class="string">"+9876543210"</span>,
+  <span class="key">"address"</span>: <span class="string">"456 New Address"</span>,
+  <span class="key">"gender"</span>: <span class="string">"female"</span>
+}</code>
+                        </div>
+
+                        <h4>Request Body (Field Request):</h4>
+                        <div class="code-block" data-language="JSON">
+                            <code>{
+  <span class="key">"requested_role_id"</span>: <span class="string">"role-uuid"</span>,
+  <span class="key">"message"</span>: <span class="string">"I want to specialize in Backend Development"</span>
+}</code>
+                        </div>
+
+                        <h4>Success Response - Profile Update (200 OK):</h4>
+                        <div class="code-block" data-language="JSON">
+                            <code>{
+  <span class="key">"id"</span>: <span class="string">"student-uuid"</span>,
+  <span class="key">"phone_number"</span>: <span class="string">"+9876543210"</span>,
+  <span class="key">"address"</span>: <span class="string">"456 New Address"</span>
+}</code>
+                        </div>
+
+                        <h4>Success Response - Field Request (201 Created):</h4>
+                        <div class="code-block" data-language="JSON">
+                            <code>{
+  <span class="key">"id"</span>: <span class="string">"request-uuid"</span>,
+  <span class="key">"student"</span>: { <span class="comment">/* student object */</span> },
+  <span class="key">"requested_role"</span>: <span class="string">"backend-uuid"</span>,
+  <span class="key">"message"</span>: <span class="string">"I want to specialize in Backend Development"</span>,
+  <span class="key">"status"</span>: <span class="string">"pending"</span>,
+  <span class="key">"created_at"</span>: <span class="string">"2024-02-07T17:00:00Z"</span>,
+  <span class="key">"reviewed_by"</span>: <span class="string">null</span>,
+  <span class="key">"reviewed_at"</span>: <span class="string">null</span>
+}</code>
+                        </div>
+
+                        <h4>Side Effects (Field Request):</h4>
+                        <ul>
+                            <li>Sends notifications to all admins/teachers about pending review</li>
+                            <li>Student receives confirmation notification</li>
+                            <li>Request stays in "pending" status until approved/rejected</li>
+                        </ul>
+
+                        <h4>Frontend Example:</h4>
+                        <div class="code-block" data-language="JavaScript">
+                            <code>// Update profile
+const updateProfile = async (studentId, updates) => {
+  const response = await fetch(`/api/students/students/${studentId}/`, {
+    method: 'PUT',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify(updates),
+    credentials: 'include'
+  });
+  if (response.ok) showSuccess('Profile updated');
+};
+
+// Request field change
+const requestFieldChange = async (studentId, roleId, message) => {
+  const response = await fetch(`/api/students/students/${studentId}/`, {
+    method: 'PUT',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({
+      requested_role_id: roleId,
+      message: message
+    }),
+    credentials: 'include'
+  });
+  if (response.status === 201) showSuccess('Request submitted for review');
+};</code>
+                        </div>
+                    </div>
+
+                    <!-- Delete Student -->
+                    <div class="endpoint-card" id="students-delete">
+                        <div class="endpoint-header">
+                            <span class="method-badge method-delete">DELETE</span>
+                            <span class="endpoint-path">/api/students/students/{student_id}/</span>
+                        </div>
+                        
+                        <h4>Delete Student Profile</h4>
+                        <p>Deletes a student profile. Only admins/teachers can delete; students cannot delete their own profiles.</p>
+
+                        <h4>Permissions:</h4>
+                        <div class="permissions">
+                            <span class="permission-chip teacher">Teacher</span>
+                            <span class="permission-chip admin">Admin</span>
+                        </div>
+
+                        <h4>Request Body:</h4>
+                        <p class="text-muted">No body required</p>
+
+                        <h4>Success Response (204 No Content):</h4>
+                        <p class="text-muted">No response body</p>
+
+                        <h4>Frontend Example:</h4>
+                        <div class="code-block" data-language="JavaScript">
+                            <code>const deleteStudent = async (studentId) => {
+  if (!confirm('Delete this student profile? This cannot be undone.')) return;
+  
+  const response = await fetch(`/api/students/students/${studentId}/`, {
+    method: 'DELETE',
+    credentials: 'include'
+  });
+  
+  if (response.status === 204) {
+    showSuccess('Student profile deleted');
+  }
+};</code>
+                        </div>
+                    </div>
+
+                    <!-- List Field Update Requests -->
+                    <div class="endpoint-card" id="students-field-requests">
+                        <div class="endpoint-header">
+                            <span class="method-badge method-get">GET</span>
+                            <span class="endpoint-path">/api/students/students/field-requests/</span>
+                        </div>
+                        
+                        <h4>List Field Update Requests (Paginated)</h4>
+                        <p>Returns all pending field update requests for admin/teacher review. Ordered by newest first. Paginated at 25 per page.</p>
+
+                        <h4>Permissions:</h4>
+                        <div class="permissions">
+                            <span class="permission-chip teacher">Teacher</span>
+                            <span class="permission-chip admin">Admin</span>
+                        </div>
+
+                        <h4>Query Parameters:</h4>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Parameter</th>
+                                    <th>Type</th>
+                                    <th>Description</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>page <span class="badge badge-optional">optional</span></td>
+                                    <td>integer</td>
+                                    <td>Page number (default: 1, 25 items per page)</td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <h4>Success Response (200 OK):</h4>
+                        <div class="code-block" data-language="JSON">
+                            <code>{
+  <span class="key">"count"</span>: <span class="number">5</span>,
+  <span class="key">"next"</span>: <span class="string">"/api/students/students/field-requests/?page=2"</span>,
+  <span class="key">"previous"</span>: <span class="string">null</span>,
+  <span class="key">"results"</span>: [
+    {
+      <span class="key">"id"</span>: <span class="string">"request-uuid"</span>,
+      <span class="key">"student"</span>: {
+        <span class="key">"id"</span>: <span class="string">"student-uuid"</span>,
+        <span class="key">"matric_no"</span>: <span class="string">"STU-2024-001"</span>,
+        <span class="key">"user"</span>: <span class="string">"user-uuid"</span>
+      },
+      <span class="key">"requested_role"</span>: <span class="string">"Backend Development"</span>,
+      <span class="key">"message"</span>: <span class="string">"I want to specialize in backend"</span>,
+      <span class="key">"status"</span>: <span class="string">"pending"</span>,
+      <span class="key">"created_at"</span>: <span class="string">"2024-02-07T17:00:00Z"</span>,
+      <span class="key">"reviewed_by"</span>: <span class="string">null</span>,
+      <span class="key">"reviewed_at"</span>: <span class="string">null</span>
+    }
+  ]
+}</code>
+                        </div>
+
+                        <h4>Frontend Example:</h4>
+                        <div class="code-block" data-language="JavaScript">
+                            <code>const getFieldRequests = async (page = 1) => {
+  const response = await fetch(
+    `/api/students/students/field-requests/?page=${page}`,
+    { credentials: 'include' }
+  );
+  
+  if (response.ok) {
+    const data = await response.json();
+    displayRequestsQueue(data.results, data.next);
+  }
+};</code>
+                        </div>
+                    </div>
+
+                    <!-- Field Request Action -->
+                    <div class="endpoint-card" id="students-field-action">
+                        <div class="endpoint-header">
+                            <span class="method-badge method-post">POST</span>
+                            <span class="endpoint-path">/api/students/students/field-requests/{request_id}/action/</span>
+                        </div>
+                        
+                        <h4>Approve/Reject Field Update Request</h4>
+                        <p>Takes action on a pending field update request. Approval adds the role to student's fields; rejection notifies student with optional message.</p>
+
+                        <h4>Permissions:</h4>
+                        <div class="permissions">
+                            <span class="permission-chip teacher">Teacher</span>
+                            <span class="permission-chip admin">Admin</span>
+                        </div>
+
+                        <h4>Request Body:</h4>
+                        <div class="code-block" data-language="JSON">
+                            <code>{
+  <span class="key">"action"</span>: <span class="string">"approve"</span>,
+  <span class="key">"message"</span>: <span class="string">"Approved. Welcome to Backend Development track!"</span>
+}</code>
+                        </div>
+
+                        <h4>Fields:</h4>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Field</th>
+                                    <th>Type</th>
+                                    <th>Description</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>action <span class="badge badge-required">required</span></td>
+                                    <td>string</td>
+                                    <td>approve | reject</td>
+                                </tr>
+                                <tr>
+                                    <td>message <span class="badge badge-optional">optional</span></td>
+                                    <td>string</td>
+                                    <td>Message to send to student</td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <h4>Success Response (200 OK):</h4>
+                        <div class="code-block" data-language="JSON">
+                            <code>{
+  <span class="key">"id"</span>: <span class="string">"request-uuid"</span>,
+  <span class="key">"student"</span>: { <span class="comment">/* student object */</span> },
+  <span class="key">"requested_role"</span>: <span class="string">"Backend Development"</span>,
+  <span class="key">"status"</span>: <span class="string">"approved"</span>,
+  <span class="key">"created_at"</span>: <span class="string">"2024-02-07T17:00:00Z"</span>,
+  <span class="key">"reviewed_by"</span>: <span class="string">"admin-uuid"</span>,
+  <span class="key">"reviewed_at"</span>: <span class="string">"2024-02-07T17:15:00Z"</span>
+}</code>
+                        </div>
+
+                        <h4>Side Effects (Approve):</h4>
+                        <ul>
+                            <li>Adds requested role to student's fields</li>
+                            <li>Marks request as "approved"</li>
+                            <li>Sends approval notification to student (email + in-app)</li>
+                            <li>Records reviewer and timestamp</li>
+                        </ul>
+
+                        <h4>Side Effects (Reject):</h4>
+                        <ul>
+                            <li>Marks request as "rejected"</li>
+                            <li>Does NOT add role to student's fields</li>
+                            <li>Sends rejection notification with optional message</li>
+                            <li>Records reviewer and timestamp</li>
+                        </ul>
+
+                        <h4>Frontend Example:</h4>
+                        <div class="code-block" data-language="JavaScript">
+                            <code>const handleFieldRequest = async (requestId, action, message = '') => {
+  const response = await fetch(
+    `/api/students/students/field-requests/${requestId}/action/`,
+    {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ action, message }),
+      credentials: 'include'
+    }
+  );
+  
+  if (response.ok) {
+    const updated = await response.json();
+    showSuccess(`Request ${action}ed`);
+    refreshRequestsList();
+  }
+};</code>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Grades Endpoints Section -->
+                <section id="grades-endpoints">
+                    <h2>📊 GRADES API</h2>
+                    <div class="glass-card">
+                        <p class="text-muted">Endpoints for creating, viewing, and analyzing student grades. Automatically updates enrollment status and student progress when grades are created.</p>
+                    </div>
+
+                    <!-- List Grades -->
+                    <div class="endpoint-card" id="grades-list">
+                        <div class="endpoint-header">
+                            <span class="method-badge method-get">GET</span>
+                            <span class="endpoint-path">/api/grades/grades/</span>
+                        </div>
+                        
+                        <h4>List All Grades</h4>
+                        <p>Returns all grades. Supports filtering by enrollment, student, course, and more. Teachers/Admins only.</p>
+
+                        <h4>Permissions:</h4>
+                        <div class="permissions">
+                            <span class="permission-chip teacher">Teacher</span>
+                            <span class="permission-chip admin">Admin</span>
+                        </div>
+
+                        <h4>Query Parameters (all optional):</h4>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Parameter</th>
+                                    <th>Type</th>
+                                    <th>Description</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>enrollment_id</td>
+                                    <td>uuid</td>
+                                    <td>Filter by enrollment</td>
+                                </tr>
+                                <tr>
+                                    <td>student_id</td>
+                                    <td>uuid</td>
+                                    <td>Filter by student</td>
+                                </tr>
+                                <tr>
+                                    <td>student_email</td>
+                                    <td>string</td>
+                                    <td>Filter by student email (partial match)</td>
+                                </tr>
+                                <tr>
+                                    <td>student_name</td>
+                                    <td>string</td>
+                                    <td>Filter by student first/last name (partial)</td>
+                                </tr>
+                                <tr>
+                                    <td>course_id</td>
+                                    <td>uuid</td>
+                                    <td>Filter by course</td>
+                                </tr>
+                                <tr>
+                                    <td>course_name</td>
+                                    <td>string</td>
+                                    <td>Filter by course name (partial match)</td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <h4>Success Response (200 OK):</h4>
+                        <div class="code-block" data-language="JSON">
+                            <code>[
+  {
+    <span class="key">"id"</span>: <span class="string">"grade-uuid"</span>,
+    <span class="key">"enrollment"</span>: <span class="string">"enrollment-uuid"</span>,
+    <span class="key">"score"</span>: <span class="number">85.50</span>,
+    <span class="key">"remark"</span>: <span class="string">"Good"</span>,
+    <span class="key">"graded_at"</span>: <span class="string">"2024-02-07T14:30:00Z"</span>,
+    <span class="key">"graded_by"</span>: {
+      <span class="key">"id"</span>: <span class="string">"teacher-uuid"</span>,
+      <span class="key">"name"</span>: <span class="string">"Mr. Smith"</span>
+    },
+    <span class="key">"updated_at"</span>: <span class="string">"2024-02-07T14:30:00Z"</span>
+  }
+]</code>
+                        </div>
+
+                        <h4>Frontend Example:</h4>
+                        <div class="code-block" data-language="JavaScript">
+                            <code>const listGrades = async (filters = {}) => {
+  const params = new URLSearchParams(filters);
+  const response = await fetch(`/api/grades/grades/?${params}`, {
+    credentials: 'include'
+  });
+  
+  if (response.ok) {
+    const grades = await response.json();
+    displayGrades(grades);
+  }
+};</code>
+                        </div>
+                    </div>
+
+                    <!-- Create Grade -->
+                    <div class="endpoint-card" id="grades-create">
+                        <div class="endpoint-header">
+                            <span class="method-badge method-post">POST</span>
+                            <span class="endpoint-path">/api/grades/grades/create/</span>
+                        </div>
+                        
+                        <h4>Create Grade</h4>
+                        <p>Creates a new grade for an enrollment. Automatically updates enrollment status and triggers student month progression logic.</p>
+
+                        <h4>Permissions:</h4>
+                        <div class="permissions">
+                            <span class="permission-chip teacher">Teacher</span>
+                            <span class="permission-chip admin">Admin</span>
+                        </div>
+
+                        <h4>Request Body:</h4>
+                        <div class="code-block" data-language="JSON">
+                            <code>{
+  <span class="key">"enrollment"</span>: <span class="string">"enrollment-uuid"</span>,
+  <span class="key">"score"</span>: <span class="number">85.50</span>,
+  <span class="key">"total_mark"</span>: <span class="number">100.00</span>,
+  <span class="key">"pass_mark"</span>: <span class="number">50.00</span>,
+  <span class="key">"remark"</span>: <span class="string">"Excellent performance"</span>
+}</code>
+                        </div>
+
+                        <h4>Required Fields:</h4>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Field</th>
+                                    <th>Type</th>
+                                    <th>Description</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>enrollment <span class="badge badge-required">required</span></td>
+                                    <td>uuid</td>
+                                    <td>Enrollment ID to grade</td>
+                                </tr>
+                                <tr>
+                                    <td>score <span class="badge badge-required">required</span></td>
+                                    <td>decimal</td>
+                                    <td>Student's score (0.00-100.00)</td>
+                                </tr>
+                                <tr>
+                                    <td>total_mark <span class="badge badge-optional">optional</span></td>
+                                    <td>decimal</td>
+                                    <td>Total possible marks (default: 100.00)</td>
+                                </tr>
+                                <tr>
+                                    <td>pass_mark <span class="badge badge-optional">optional</span></td>
+                                    <td>decimal</td>
+                                    <td>Passing score threshold (default: 50.00)</td>
+                                </tr>
+                                <tr>
+                                    <td>remark <span class="badge badge-optional">optional</span></td>
+                                    <td>string</td>
+                                    <td>Grade remark (e.g., "Excellent", "Good", "Pass", "Fail")</td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <h4>Success Response (201 Created):</h4>
+                        <div class="code-block" data-language="JSON">
+                            <code>{
+  <span class="key">"id"</span>: <span class="string">"grade-uuid"</span>,
+  <span class="key">"enrollment"</span>: <span class="string">"enrollment-uuid"</span>,
+  <span class="key">"score"</span>: <span class="number">85.50</span>,
+  <span class="key">"remark"</span>: <span class="string">"Excellent performance"</span>,
+  <span class="key">"graded_at"</span>: <span class="string">"2024-02-07T14:30:00Z"</span>,
+  <span class="key">"graded_by"</span>: <span class="string">"teacher-uuid"</span>
+}</code>
+                        </div>
+
+                        <h4>Side Effects:</h4>
+                        <ul>
+                            <li>If score >= pass_mark: sets enrollment.status = "completed"</li>
+                            <li>If score < pass_mark: sets enrollment.status = "failed"</li>
+                            <li>Triggers student progression signal (commented out, can be enabled)</li>
+                        </ul>
+
+                        <h4>Frontend Example:</h4>
+                        <div class="code-block" data-language="JavaScript">
+                            <code>const createGrade = async (enrollmentId, gradeData) => {
+  try {
+    const response = await fetch('/api/grades/grades/create/', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        enrollment: enrollmentId,
+        ...gradeData
+      }),
+      credentials: 'include'
+    });
+    
+    if (response.status === 201) {
+      const grade = await response.json();
+      showSuccess('Grade created successfully');
+      return grade;
+    }
+  } catch (err) {
+    console.error('Error creating grade:', err);
+  }
+};</code>
+                        </div>
+                    </div>
+
+                    <!-- Grade Detail -->
+                    <div class="endpoint-card" id="grades-detail">
+                        <div class="endpoint-header">
+                            <span class="method-badge method-get">GET</span>
+                            <span class="endpoint-path">/api/grades/grades/{grade_id}/</span>
+                        </div>
+                        
+                        <h4>Get Grade Details</h4>
+                        <p>Retrieves a specific grade with full enrollment and student information.</p>
+
+                        <h4>Permissions:</h4>
+                        <div class="permissions">
+                            <span class="permission-chip teacher">Teacher</span>
+                            <span class="permission-chip admin">Admin</span>
+                        </div>
+
+                        <h4>Success Response (200 OK):</h4>
+                        <div class="code-block" data-language="JSON">
+                            <code>{
+  <span class="key">"id"</span>: <span class="string">"grade-uuid"</span>,
+  <span class="key">"enrollment"</span>: {
+    <span class="key">"id"</span>: <span class="string">"enrollment-uuid"</span>,
+    <span class="key">"student"</span>: {
+      <span class="key">"id"</span>: <span class="string">"student-uuid"</span>,
+      <span class="key">"user_email"</span>: <span class="string">"student@example.com"</span>
+    },
+    <span class="key">"course"</span>: {
+      <span class="key">"id"</span>: <span class="string">"course-uuid"</span>,
+      <span class="key">"title"</span>: <span class="string">"Python Basics"</span>
+    },
+    <span class="key">"month"</span>: <span class="number">2</span>,
+    <span class="key">"status"</span>: <span class="string">"completed"</span>
+  },
+  <span class="key">"score"</span>: <span class="number">85.50</span>,
+  <span class="key">"remark"</span>: <span class="string">"Excellent performance"</span>,
+  <span class="key">"graded_at"</span>: <span class="string">"2024-02-07T14:30:00Z"</span>
+}</code>
+                        </div>
+                    </div>
+
+                    <!-- Teacher Grade List -->
+                    <div class="endpoint-card" id="grades-teacher-list">
+                        <div class="endpoint-header">
+                            <span class="method-badge method-get">GET</span>
+                            <span class="endpoint-path">/api/grades/teacher/grades/</span>
+                        </div>
+                        
+                        <h4>Teacher's Grades (Created/Updated)</h4>
+                        <p>Returns grades created or updated by the current teacher. Supports same filters as list endpoint.</p>
+
+                        <h4>Permissions:</h4>
+                        <div class="permissions">
+                            <span class="permission-chip teacher">Teacher</span>
+                            <span class="permission-chip admin">Admin</span>
+                        </div>
+
+                        <h4>Query Parameters:</h4>
+                        <p class="text-muted">Same as grades list endpoint (enrollment_id, student_id, student_email, course_name, etc.)</p>
+
+                        <h4>Success Response (200 OK):</h4>
+                        <p class="text-muted">Same format as grades list endpoint</p>
+                    </div>
+
+                    <!-- Student Grade List -->
+                    <div class="endpoint-card" id="grades-student-list">
+                        <div class="endpoint-header">
+                            <span class="method-badge method-get">GET</span>
+                            <span class="endpoint-path">/api/grades/student/grades/</span>
+                        </div>
+                        
+                        <h4>Student's Grades</h4>
+                        <p>Retrieves grades for the authenticated student's enrolled courses.</p>
+
+                        <h4>Permissions:</h4>
+                        <div class="permissions">
+                            <span class="permission-chip student">Student</span>
+                        </div>
+
+                        <h4>Query Parameters (all optional):</h4>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Parameter</th>
+                                    <th>Type</th>
+                                    <th>Description</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>min_score</td>
+                                    <td>decimal</td>
+                                    <td>Grades >= this score</td>
+                                </tr>
+                                <tr>
+                                    <td>max_score</td>
+                                    <td>decimal</td>
+                                    <td>Grades <= this score</td>
+                                </tr>
+                                <tr>
+                                    <td>graded_after</td>
+                                    <td>datetime</td>
+                                    <td>Grades graded after this date</td>
+                                </tr>
+                                <tr>
+                                    <td>graded_before</td>
+                                    <td>datetime</td>
+                                    <td>Grades graded before this date</td>
+                                </tr>
+                                <tr>
+                                    <td>course_name</td>
+                                    <td>string</td>
+                                    <td>Filter by course name (partial)</td>
+                                </tr>
+                                <tr>
+                                    <td>enrollment_month</td>
+                                    <td>integer</td>
+                                    <td>Filter by enrollment month</td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <h4>Success Response (200 OK):</h4>
+                        <p class="text-muted">Same format as grades list endpoint</p>
+
+                        <h4>Frontend Example:</h4>
+                        <div class="code-block" data-language="JavaScript">
+                            <code>const getMyGrades = async (filters = {}) => {
+  const params = new URLSearchParams(filters);
+  const response = await fetch(`/api/grades/student/grades/?${params}`, {
+    credentials: 'include'
+  });
+  
+  if (response.ok) {
+    const grades = await response.json();
+    // Display student's grades with filtering options
+    displayStudentGrades(grades);
+  }
+};</code>
+                        </div>
+                    </div>
+
+                    <!-- Course Stats -->
+                    <div class="endpoint-card" id="grades-course-stats">
+                        <div class="endpoint-header">
+                            <span class="method-badge method-get">GET</span>
+                            <span class="endpoint-path">/api/grades/courses/{course_id}/stats/</span>
+                        </div>
+                        
+                        <h4>Course Grade Statistics</h4>
+                        <p>Returns aggregated grade statistics for a course: average, min, max, count, and score distribution buckets.</p>
+
+                        <h4>Permissions:</h4>
+                        <div class="permissions">
+                            <span class="permission-chip teacher">Teacher</span>
+                            <span class="permission-chip admin">Admin</span>
+                        </div>
+
+                        <h4>Query Parameters:</h4>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Parameter</th>
+                                    <th>Type</th>
+                                    <th>Required</th>
+                                    <th>Description</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>course_id</td>
+                                    <td>uuid</td>
+                                    <td><span class="badge badge-required">yes</span></td>
+                                    <td>Course ID to get stats for</td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <h4>Success Response (200 OK):</h4>
+                        <div class="code-block" data-language="JSON">
+                            <code>{
+  <span class="key">"course_id"</span>: <span class="string">"course-uuid"</span>,
+  <span class="key">"course_title"</span>: <span class="string">"Python Basics"</span>,
+  <span class="key">"count"</span>: <span class="number">25</span>,
+  <span class="key">"average"</span>: <span class="number">78.5</span>,
+  <span class="key">"minimum"</span>: <span class="number">42.0</span>,
+  <span class="key">"maximum"</span>: <span class="number">98.5</span>,
+  <span class="key">"buckets"</span>: {
+    <span class="key">"0-49"</span>: <span class="number">2</span>,
+    <span class="key">"50-64"</span>: <span class="number">5</span>,
+    <span class="key">"65-79"</span>: <span class="number">10</span>,
+    <span class="key">"80-89"</span>: <span class="number">6</span>,
+    <span class="key">"90-100"</span>: <span class="number">2</span>
+  }
+}</code>
+                        </div>
+
+                        <h4>Score Buckets:</h4>
+                        <ul>
+                            <li><strong>0-49:</strong> Failing grades</li>
+                            <li><strong>50-64:</strong> Below average</li>
+                            <li><strong>65-79:</strong> Average to good</li>
+                            <li><strong>80-89:</strong> Good to very good</li>
+                            <li><strong>90-100:</strong> Excellent</li>
+                        </ul>
+
+                        <h4>Frontend Example:</h4>
+                        <div class="code-block" data-language="JavaScript">
+                            <code>const getCourseStats = async (courseId) => {
+  const response = await fetch(
+    `/api/grades/courses/${courseId}/stats/`,
+    { credentials: 'include' }
+  );
+  
+  if (response.ok) {
+    const stats = await response.json();
+    // Display course statistics and distribution chart
+    displayCourseStats(stats);
+  }
+};</code>
+                        </div>
+                    </div>
+
+                    <!-- Student Course Stats -->
+                    <div class="endpoint-card" id="grades-student-course-stats">
+                        <div class="endpoint-header">
+                            <span class="method-badge method-get">GET</span>
+                            <span class="endpoint-path">/api/grades/student/courses/{course_id}/stats/</span>
+                        </div>
+                        
+                        <h4>Student's Performance in Course</h4>
+                        <p>Returns aggregated stats for a student in a specific course, with same structure as course stats.</p>
+
+                        <h4>Permissions:</h4>
+                        <div class="permissions">
+                            <span class="permission-chip student">Student</span>
+                        </div>
+
+                        <h4>Query Parameters:</h4>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Parameter</th>
+                                    <th>Type</th>
+                                    <th>Required</th>
+                                    <th>Description</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>course_id</td>
+                                    <td>uuid</td>
+                                    <td><span class="badge badge-required">yes</span></td>
+                                    <td>Course ID to get stats for</td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <h4>Success Response (200 OK):</h4>
+                        <p class="text-muted">Same format as course stats endpoint</p>
+
+                        <h4>Frontend Example:</h4>
+                        <div class="code-block" data-language="JavaScript">
+                            <code>const getMyPerformance = async (courseId) => {
+  const response = await fetch(
+    `/api/grades/student/courses/${courseId}/stats/`,
+    { credentials: 'include' }
+  );
+  
+  if (response.ok) {
+    const stats = await response.json();
+    // Display student's performance metrics
+    displayPerformance(stats);
+  }
+};</code>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Teachers Endpoints Section -->
+                <section id="teachers-endpoints">
+                    <h2>👨‍🏫 TEACHERS API</h2>
+                    <div class="glass-card">
+                        <p class="text-muted">Endpoints for managing teacher profiles including personal information, department affiliation, and contact details. Only admins can create teacher profiles.</p>
+                    </div>
+
+                    <!-- Create Teacher -->
+                    <div class="endpoint-card" id="teachers-create">
+                        <div class="endpoint-header">
+                            <span class="method-badge method-post">POST</span>
+                            <span class="endpoint-path">/api/teachers/teachers/create/</span>
+                        </div>
+                        
+                        <h4>Create Teacher Profile</h4>
+                        <p>Creates a new teacher profile linked to an existing user account. Only admins can create teacher profiles.</p>
+
+                        <h4>Permissions:</h4>
+                        <div class="permission-matrix">
+                            <span class="permission-denied">Student</span>
+                            <span class="permission-denied">Teacher</span>
+                            <span class="permission-allowed">Admin</span>
+                        </div>
+
+                        <h4>Request Body:</h4>
+                        <table class="endpoint-table">
+                            <thead>
+                                <tr>
+                                    <th>Field</th>
+                                    <th>Type</th>
+                                    <th>Required</th>
+                                    <th>Description</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><code>user</code></td>
+                                    <td>integer</td>
+                                    <td>Yes</td>
+                                    <td>User ID (must be an existing user account)</td>
+                                </tr>
+                                <tr>
+                                    <td><code>department</code></td>
+                                    <td>string</td>
+                                    <td>Yes</td>
+                                    <td>Department name (max 100 characters)</td>
+                                </tr>
+                                <tr>
+                                    <td><code>phone_number</code></td>
+                                    <td>string</td>
+                                    <td>Yes</td>
+                                    <td>Contact phone number (max 20 characters)</td>
+                                </tr>
+                                <tr>
+                                    <td><code>address</code></td>
+                                    <td>string</td>
+                                    <td>Yes</td>
+                                    <td>Full address</td>
+                                </tr>
+                                <tr>
+                                    <td><code>gender</code></td>
+                                    <td>string</td>
+                                    <td>Yes</td>
+                                    <td>Gender: "male", "female", or "others"</td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <h4>Example Request:</h4>
+                        <div class="code-block" data-language="json">
+<code>{
+  "user": 5,
+  "department": "Computer Science",
+  "phone_number": "+234-123-4567",
+  "address": "123 Education Street, Lagos",
+  "gender": "male"
+}</code>
+                        </div>
+
+                        <h4>Success Response (201 Created):</h4>
+                        <div class="code-block" data-language="json">
+<code>{
+  "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+  "user": 5,
+  "department": "Computer Science",
+  "phone_number": "+234-123-4567",
+  "address": "123 Education Street, Lagos",
+  "gender": "male"
+}</code>
+                        </div>
+
+                        <h4>Error Response (400 Bad Request):</h4>
+                        <div class="code-block" data-language="json">
+<code>{
+  "department": ["This field may not be blank."],
+  "phone_number": ["This field may not be blank."],
+  "gender": ["\"invalid\" is not a valid choice."]
+}</code>
+                        </div>
+
+                        <h4>Frontend Example (JavaScript):</h4>
+                        <div class="code-block" data-language="javascript">
+<code>async function createTeacher() {
+  const response = await fetch('/api/teachers/teachers/create/', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    },
+    body: JSON.stringify({
+      user: 5,
+      department: 'Computer Science',
+      phone_number: '+234-123-4567',
+      address: '123 Education Street, Lagos',
+      gender: 'male'
+    })
+  });
+  const data = await response.json();
+  console.log('Teacher created:', data);
+}</code>
+                        </div>
+                    </div>
+
+                    <!-- Get Teacher Detail -->
+                    <div class="endpoint-card" id="teachers-detail">
+                        <div class="endpoint-header">
+                            <span class="method-badge method-get">GET</span>
+                            <span class="endpoint-path">/api/teachers/teachers/{teacher_id}/</span>
+                        </div>
+                        
+                        <h4>Get Teacher Profile</h4>
+                        <p>Retrieves a teacher's profile information. Any authenticated user can view teacher profiles.</p>
+
+                        <h4>Permissions:</h4>
+                        <div class="permission-matrix">
+                            <span class="permission-allowed">Student</span>
+                            <span class="permission-allowed">Teacher</span>
+                            <span class="permission-allowed">Admin</span>
+                        </div>
+
+                        <h4>Path Parameters:</h4>
+                        <table class="endpoint-table">
+                            <thead>
+                                <tr>
+                                    <th>Parameter</th>
+                                    <th>Type</th>
+                                    <th>Description</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><code>teacher_id</code></td>
+                                    <td>UUID</td>
+                                    <td>Unique identifier of the teacher</td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <h4>Success Response (200 OK):</h4>
+                        <div class="code-block" data-language="json">
+<code>{
+  "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+  "user": 5,
+  "department": "Computer Science",
+  "phone_number": "+234-123-4567",
+  "address": "123 Education Street, Lagos",
+  "gender": "male"
+}</code>
+                        </div>
+
+                        <h4>Error Response (404 Not Found):</h4>
+                        <div class="code-block" data-language="json">
+<code>{"detail": "Teacher not found."}</code>
+                        </div>
+
+                        <h4>Frontend Example (JavaScript):</h4>
+                        <div class="code-block" data-language="javascript">
+<code>async function getTeacherProfile(teacherId) {
+  const response = await fetch(`/api/teachers/teachers/${teacherId}/`, {
+    method: 'GET',
+    headers: {
+      'Authorization': `Bearer ${token}`
+    }
+  });
+  const teacher = await response.json();
+  console.log('Teacher profile:', teacher);
+  displayTeacherInfo(teacher);
+}</code>
+                        </div>
+                    </div>
+
+                    <!-- Update Teacher -->
+                    <div class="endpoint-card" id="teachers-update">
+                        <div class="endpoint-header">
+                            <span class="method-badge method-put">PUT</span>
+                            <span class="endpoint-path">/api/teachers/teachers/{teacher_id}/</span>
+                        </div>
+                        
+                        <h4>Update Teacher Profile</h4>
+                        <p>Updates teacher profile information. Teachers can update their own profile; admins can update any profile. Supports partial updates.</p>
+
+                        <h4>Permissions:</h4>
+                        <div class="permission-matrix">
+                            <span class="permission-denied">Student</span>
+                            <span class="permission-allowed">Teacher (own profile only)</span>
+                            <span class="permission-allowed">Admin</span>
+                        </div>
+
+                        <h4>Path Parameters:</h4>
+                        <table class="endpoint-table">
+                            <thead>
+                                <tr>
+                                    <th>Parameter</th>
+                                    <th>Type</th>
+                                    <th>Description</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><code>teacher_id</code></td>
+                                    <td>UUID</td>
+                                    <td>Unique identifier of the teacher to update</td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <h4>Request Body (all fields optional):</h4>
+                        <table class="endpoint-table">
+                            <thead>
+                                <tr>
+                                    <th>Field</th>
+                                    <th>Type</th>
+                                    <th>Description</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><code>department</code></td>
+                                    <td>string</td>
+                                    <td>Department name (max 100 characters)</td>
+                                </tr>
+                                <tr>
+                                    <td><code>phone_number</code></td>
+                                    <td>string</td>
+                                    <td>Contact phone number (max 20 characters)</td>
+                                </tr>
+                                <tr>
+                                    <td><code>address</code></td>
+                                    <td>string</td>
+                                    <td>Full address</td>
+                                </tr>
+                                <tr>
+                                    <td><code>gender</code></td>
+                                    <td>string</td>
+                                    <td>Gender: "male", "female", or "others"</td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <h4>Example Request (Partial Update):</h4>
+                        <div class="code-block" data-language="json">
+<code>{
+  "phone_number": "+234-987-6543",
+  "department": "Computer Science & AI"
+}</code>
+                        </div>
+
+                        <h4>Success Response (200 OK):</h4>
+                        <div class="code-block" data-language="json">
+<code>{
+  "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+  "user": 5,
+  "department": "Computer Science & AI",
+  "phone_number": "+234-987-6543",
+  "address": "123 Education Street, Lagos",
+  "gender": "male"
+}</code>
+                        </div>
+
+                        <h4>Error Response (404 Not Found):</h4>
+                        <div class="code-block" data-language="json">
+<code>{"detail": "Teacher not found."}</code>
+                        </div>
+
+                        <h4>Frontend Example (JavaScript):</h4>
+                        <div class="code-block" data-language="javascript">
+<code>async function updateTeacherProfile(teacherId, updates) {
+  const response = await fetch(`/api/teachers/teachers/${teacherId}/`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    },
+    body: JSON.stringify(updates)
+  });
+  const updatedTeacher = await response.json();
+  console.log('Teacher updated:', updatedTeacher);
+  return updatedTeacher;
+}
+
+// Usage
+await updateTeacherProfile(teacherId, {
+  phone_number: '+234-987-6543',
+  department: 'Computer Science & AI'
+});</code>
+                        </div>
+                    </div>
+
+                    <!-- Delete Teacher -->
+                    <div class="endpoint-card" id="teachers-delete">
+                        <div class="endpoint-header">
+                            <span class="method-badge method-delete">DELETE</span>
+                            <span class="endpoint-path">/api/teachers/teachers/{teacher_id}/</span>
+                        </div>
+                        
+                        <h4>Delete Teacher Profile</h4>
+                        <p>Removes a teacher profile from the system. Only admins can delete teacher profiles.</p>
+
+                        <h4>Permissions:</h4>
+                        <div class="permission-matrix">
+                            <span class="permission-denied">Student</span>
+                            <span class="permission-denied">Teacher</span>
+                            <span class="permission-allowed">Admin</span>
+                        </div>
+
+                        <h4>Path Parameters:</h4>
+                        <table class="endpoint-table">
+                            <thead>
+                                <tr>
+                                    <th>Parameter</th>
+                                    <th>Type</th>
+                                    <th>Description</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><code>teacher_id</code></td>
+                                    <td>UUID</td>
+                                    <td>Unique identifier of the teacher to delete</td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <h4>Success Response (204 No Content):</h4>
+                        <p>Empty response body. Returns HTTP 204 status code on successful deletion.</p>
+
+                        <h4>Error Response (404 Not Found):</h4>
+                        <div class="code-block" data-language="json">
+<code>{"detail": "Teacher not found."}</code>
+                        </div>
+
+                        <h4>Side Effects:</h4>
+                        <ul>
+                            <li>Removes the teacher profile from the database</li>
+                            <li>Does NOT delete the associated user account (user remains in system)</li>
+                            <li>User can no longer be identified as a teacher in the system</li>
+                        </ul>
+
+                        <h4>Frontend Example (JavaScript):</h4>
+                        <div class="code-block" data-language="javascript">
+<code>async function deleteTeacherProfile(teacherId) {
+  const response = await fetch(`/api/teachers/teachers/${teacherId}/`, {
+    method: 'DELETE',
+    headers: {
+      'Authorization': `Bearer ${token}`
+    }
+  });
+  
+  if (response.status === 204) {
+    console.log('Teacher profile deleted successfully');
+    // Redirect or update UI
+  } else {
+    const error = await response.json();
+    console.error('Delete failed:', error);
+  }
+}</code>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Notifications Endpoints Section -->
+                <section id="notifications-endpoints">
+                    <h2>🔔 NOTIFICATIONS API</h2>
+                    <div class="glass-card">
+                        <p class="text-muted">System for notifying admins about pending user approvals, students about graded assignments, and field update requests. Includes read status tracking and unread counts.</p>
+                    </div>
+
+                    <!-- Admin Notifications List -->
+                    <div class="endpoint-card" id="notifications-admin-list">
+                        <div class="endpoint-header">
+                            <span class="method-badge method-get">GET</span>
+                            <span class="endpoint-path">/api/notifications/admin/notifications/</span>
+                        </div>
+                        
+                        <h4>Admin Notifications</h4>
+                        <p>Returns all admin notifications, primarily for user approval requests. Admin only.</p>
+
+                        <h4>Permissions:</h4>
+                        <div class="permissions">
+                            <span class="permission-chip admin">Admin</span>
+                        </div>
+
+                        <h4>Success Response (200 OK):</h4>
+                        <div class="code-block" data-language="JSON">
+                            <code>[
+  {
+    <span class="key">"id"</span>: <span class="string">"notification-uuid"</span>,
+    <span class="key">"type"</span>: <span class="string">"user_approval"</span>,
+    <span class="key">"related_user"</span>: {
+      <span class="key">"id"</span>: <span class="string">"user-uuid"</span>,
+      <span class="key">"first_name"</span>: <span class="string">"John"</span>,
+      <span class="key">"last_name"</span>: <span class="string">"Doe"</span>,
+      <span class="key">"email"</span>: <span class="string">"john@example.com"</span>,
+      <span class="key">"role"</span>: <span class="string">"student"</span>,
+      <span class="key">"is_email_verified"</span>: <span class="boolean">true</span>,
+      <span class="key">"created_at"</span>: <span class="string">"2024-02-07T10:00:00Z"</span>
+    },
+    <span class="key">"is_read"</span>: <span class="boolean">false</span>,
+    <span class="key">"created_at"</span>: <span class="string">"2024-02-07T10:00:00Z"</span>
+  }
+]</code>
+                        </div>
+
+                        <h4>Frontend Example:</h4>
+                        <div class="code-block" data-language="JavaScript">
+                            <code>const getAdminNotifications = async () => {
+  const response = await fetch('/api/notifications/admin/notifications/', {
+    credentials: 'include'
+  });
+  
+  if (response.ok) {
+    const notifications = await response.json();
+    displayAdminNotifications(notifications);
+  }
+};</code>
+                        </div>
+                    </div>
+
+                    <!-- Pending Users -->
+                    <div class="endpoint-card" id="notifications-pending-users">
+                        <div class="endpoint-header">
+                            <span class="method-badge method-get">GET</span>
+                            <span class="endpoint-path">/api/notifications/admin/pending-users/</span>
+                        </div>
+                        
+                        <h4>Pending User Approvals</h4>
+                        <p>Lists all users awaiting admin approval. Must have verified email but not yet activated.</p>
+
+                        <h4>Permissions:</h4>
+                        <div class="permissions">
+                            <span class="permission-chip admin">Admin</span>
+                        </div>
+
+                        <h4>Success Response (200 OK):</h4>
+                        <div class="code-block" data-language="JSON">
+                            <code>[
+  {
+    <span class="key">"id"</span>: <span class="string">"user-uuid"</span>,
+    <span class="key">"first_name"</span>: <span class="string">"Jane"</span>,
+    <span class="key">"last_name"</span>: <span class="string">"Smith"</span>,
+    <span class="key">"email"</span>: <span class="string">"jane@example.com"</span>,
+    <span class="key">"role"</span>: <span class="string">"student"</span>,
+    <span class="key">"is_email_verified"</span>: <span class="boolean">true</span>,
+    <span class="key">"is_active"</span>: <span class="boolean">false</span>,
+    <span class="key">"created_at"</span>: <span class="string">"2024-02-06T14:30:00Z"</span>
+  }
+]</code>
+                        </div>
+
+                        <h4>How It Works:</h4>
+                        <ul>
+                            <li>Users must verify email (OTP) before appearing here</li>
+                            <li>Users wait in pending state until admin approves/rejects</li>
+                            <li>Returned ordered by newest first</li>
+                        </ul>
+
+                        <h4>Frontend Example:</h4>
+                        <div class="code-block" data-language="JavaScript">
+                            <code>const getPendingUsers = async () => {
+  const response = await fetch('/api/notifications/admin/pending-users/', {
+    credentials: 'include'
+  });
+  
+  if (response.ok) {
+    const users = await response.json();
+    displayPendingApprovals(users);
+  }
+};</code>
+                        </div>
+                    </div>
+
+                    <!-- Approve User -->
+                    <div class="endpoint-card" id="notifications-approve-user">
+                        <div class="endpoint-header">
+                            <span class="method-badge method-post">POST</span>
+                            <span class="endpoint-path">/api/notifications/admin/users/{user_id}/approve/</span>
+                        </div>
+                        
+                        <h4>Approve User Account</h4>
+                        <p>Activates a pending user's account. Optionally set role. Sends approval email.</p>
+
+                        <h4>Permissions:</h4>
+                        <div class="permissions">
+                            <span class="permission-chip admin">Admin</span>
+                        </div>
+
+                        <h4>Request Body:</h4>
+                        <div class="code-block" data-language="JSON">
+                            <code>{
+  <span class="key">"role"</span>: <span class="string">"student"</span>
+}</code>
+                        </div>
+
+                        <h4>Fields:</h4>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Field</th>
+                                    <th>Type</th>
+                                    <th>Description</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>role <span class="badge badge-optional">optional</span></td>
+                                    <td>string</td>
+                                    <td>Role to assign (student, teacher, admin). If not provided, uses user's original role.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <h4>Success Response (200 OK):</h4>
+                        <div class="code-block" data-language="JSON">
+                            <code>{
+  <span class="key">"detail"</span>: <span class="string">"User approved successfully"</span>
+}</code>
+                        </div>
+
+                        <h4>Side Effects:</h4>
+                        <ul>
+                            <li>Sets user.is_active = True</li>
+                            <li>Marks admin notification as read</li>
+                            <li>Sends approval email to user</li>
+                            <li>User can now login</li>
+                        </ul>
+
+                        <h4>Frontend Example:</h4>
+                        <div class="code-block" data-language="JavaScript">
+                            <code>const approveUser = async (userId, role = 'student') => {
+  const response = await fetch(
+    `/api/notifications/admin/users/${userId}/approve/`,
+    {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ role }),
+      credentials: 'include'
+    }
+  );
+  
+  if (response.ok) {
+    showSuccess('User approved');
+    refreshPendingUsers();
+  }
+};</code>
+                        </div>
+                    </div>
+
+                    <!-- Reject User -->
+                    <div class="endpoint-card" id="notifications-reject-user">
+                        <div class="endpoint-header">
+                            <span class="method-badge method-post">POST</span>
+                            <span class="endpoint-path">/api/notifications/admin/users/{user_id}/reject/</span>
+                        </div>
+                        
+                        <h4>Reject User Account</h4>
+                        <p>Deletes pending user account. Sends rejection email. Admin only.</p>
+
+                        <h4>Permissions:</h4>
+                        <div class="permissions">
+                            <span class="permission-chip admin">Admin</span>
+                        </div>
+
+                        <h4>Request Body:</h4>
+                        <p class="text-muted">No body required</p>
+
+                        <h4>Success Response (200 OK):</h4>
+                        <div class="code-block" data-language="JSON">
+                            <code>{
+  <span class="key">"detail"</span>: <span class="string">"User rejected and deleted"</span>
+}</code>
+                        </div>
+
+                        <h4>Side Effects:</h4>
+                        <ul>
+                            <li>Deletes user account permanently</li>
+                            <li>Deletes all related admin notifications</li>
+                            <li>Sends rejection email</li>
+                        </ul>
+
+                        <h4>Frontend Example:</h4>
+                        <div class="code-block" data-language="JavaScript">
+                            <code>const rejectUser = async (userId) => {
+  if (!confirm('Are you sure? This will delete the user account.')) return;
+  
+  const response = await fetch(
+    `/api/notifications/admin/users/${userId}/reject/`,
+    { method: 'POST', credentials: 'include' }
+  );
+  
+  if (response.ok) {
+    showSuccess('User rejected and deleted');
+    refreshPendingUsers();
+  }
+};</code>
+                        </div>
+                    </div>
+
+                    <!-- Student Grade Notifications List -->
+                    <div class="endpoint-card" id="notifications-student-grades">
+                        <div class="endpoint-header">
+                            <span class="method-badge method-get">GET</span>
+                            <span class="endpoint-path">/api/notifications/student/grade-notifications/</span>
+                        </div>
+                        
+                        <h4>Student's Grade Notifications</h4>
+                        <p>Returns all grade notifications for the authenticated student. Created when teacher grades their work.</p>
+
+                        <h4>Permissions:</h4>
+                        <div class="permissions">
+                            <span class="permission-chip student">Student</span>
+                        </div>
+
+                        <h4>Success Response (200 OK):</h4>
+                        <div class="code-block" data-language="JSON">
+                            <code>[
+  {
+    <span class="key">"id"</span>: <span class="string">"notification-uuid"</span>,
+    <span class="key">"student_email"</span>: <span class="string">"student@example.com"</span>,
+    <span class="key">"student_name"</span>: <span class="string">"John Doe"</span>,
+    <span class="key">"course_title"</span>: <span class="string">"Python Basics"</span>,
+    <span class="key">"score"</span>: <span class="number">85.50</span>,
+    <span class="key">"total_mark"</span>: <span class="number">100.00</span>,
+    <span class="key">"remark"</span>: <span class="string">"Excellent"</span>,
+    <span class="key">"is_read"</span>: <span class="boolean">false</span>,
+    <span class="key">"created_at"</span>: <span class="string">"2024-02-07T14:30:00Z"</span>
+  }
+]</code>
+                        </div>
+
+                        <h4>Frontend Example:</h4>
+                        <div class="code-block" data-language="JavaScript">
+                            <code>const getGradeNotifications = async () => {
+  const response = await fetch('/api/notifications/student/grade-notifications/', {
+    credentials: 'include'
+  });
+  
+  if (response.ok) {
+    const notifications = await response.json();
+    displayGradeNotifications(notifications);
+  }
+};</code>
+                        </div>
+                    </div>
+
+                    <!-- Grade Notification Detail -->
+                    <div class="endpoint-card" id="notifications-grade-detail">
+                        <div class="endpoint-header">
+                            <span class="method-badge method-get">GET</span>
+                            <span class="endpoint-path">/api/notifications/student/grade-notifications/{notification_id}/</span>
+                        </div>
+                        
+                        <h4>Grade Notification Detail</h4>
+                        <p>Gets a specific grade notification and automatically marks as read.</p>
+
+                        <h4>Permissions:</h4>
+                        <div class="permissions">
+                            <span class="permission-chip student">Student</span>
+                        </div>
+
+                        <h4>Success Response (200 OK):</h4>
+                        <p class="text-muted">Same format as grade notifications list</p>
+
+                        <h4>Side Effects:</h4>
+                        <ul>
+                            <li>Automatically marks notification as read on GET</li>
+                        </ul>
+
+                        <h4>Frontend Example:</h4>
+                        <div class="code-block" data-language="JavaScript">
+                            <code>const viewGradeNotification = async (notificationId) => {
+  const response = await fetch(
+    `/api/notifications/student/grade-notifications/${notificationId}/`,
+    { credentials: 'include' }
+  );
+  
+  if (response.ok) {
+    const notification = await response.json();
+    displayNotificationDetail(notification);
+  }
+};</code>
+                        </div>
+                    </div>
+
+                    <!-- Unread Grade Count -->
+                    <div class="endpoint-card" id="notifications-grade-unread-count">
+                        <div class="endpoint-header">
+                            <span class="method-badge method-get">GET</span>
+                            <span class="endpoint-path">/api/notifications/student/grade-notifications/unread-count/</span>
+                        </div>
+                        
+                        <h4>Unread Grade Notifications Count</h4>
+                        <p>Returns count of unread grade notifications for the student. Use for badge display.</p>
+
+                        <h4>Permissions:</h4>
+                        <div class="permissions">
+                            <span class="permission-chip student">Student</span>
+                        </div>
+
+                        <h4>Success Response (200 OK):</h4>
+                        <div class="code-block" data-language="JSON">
+                            <code>{
+  <span class="key">"unread_count"</span>: <span class="number">3</span>
+}</code>
+                        </div>
+
+                        <h4>Frontend Example:</h4>
+                        <div class="code-block" data-language="JavaScript">
+                            <code>const updateUnreadBadge = async () => {
+  const response = await fetch(
+    '/api/notifications/student/grade-notifications/unread-count/',
+    { credentials: 'include' }
+  );
+  
+  if (response.ok) {
+    const data = await response.json();
+    document.querySelector('.notification-badge').textContent = data.unread_count;
+  }
+};</code>
+                        </div>
+                    </div>
+
+                    <!-- Mark Single Grade as Read -->
+                    <div class="endpoint-card" id="notifications-mark-grade-read">
+                        <div class="endpoint-header">
+                            <span class="method-badge method-put">PUT</span>
+                            <span class="endpoint-path">/api/notifications/student/grade-notifications/{notification_id}/read/</span>
+                        </div>
+                        
+                        <h4>Mark Grade Notification as Read</h4>
+                        <p>Explicitly marks a grade notification as read.</p>
+
+                        <h4>Permissions:</h4>
+                        <div class="permissions">
+                            <span class="permission-chip student">Student</span>
+                        </div>
+
+                        <h4>Request Body:</h4>
+                        <p class="text-muted">No body required</p>
+
+                        <h4>Success Response (200 OK):</h4>
+                        <p class="text-muted">Same format as grade notifications list with is_read=true</p>
+
+                        <h4>Frontend Example:</h4>
+                        <div class="code-block" data-language="JavaScript">
+                            <code>const markAsRead = async (notificationId) => {
+  const response = await fetch(
+    `/api/notifications/student/grade-notifications/${notificationId}/read/`,
+    { method: 'PUT', credentials: 'include' }
+  );
+  
+  if (response.ok) {
+    const notification = await response.json();
+    updateNotificationUI(notification);
+  }
+};</code>
+                        </div>
+                    </div>
+
+                    <!-- Mark All Grades as Read -->
+                    <div class="endpoint-card" id="notifications-mark-all-grades-read">
+                        <div class="endpoint-header">
+                            <span class="method-badge method-put">PUT</span>
+                            <span class="endpoint-path">/api/notifications/student/grade-notifications/mark-all-read/</span>
+                        </div>
+                        
+                        <h4>Mark All Grade Notifications as Read</h4>
+                        <p>Marks all unread grade notifications as read at once.</p>
+
+                        <h4>Permissions:</h4>
+                        <div class="permissions">
+                            <span class="permission-chip student">Student</span>
+                        </div>
+
+                        <h4>Request Body:</h4>
+                        <p class="text-muted">No body required</p>
+
+                        <h4>Success Response (200 OK):</h4>
+                        <div class="code-block" data-language="JSON">
+                            <code>{
+  <span class="key">"message"</span>: <span class="string">"5 notification(s) marked as read."</span>
+}</code>
+                        </div>
+
+                        <h4>Frontend Example:</h4>
+                        <div class="code-block" data-language="JavaScript">
+                            <code>const markAllAsRead = async () => {
+  const response = await fetch(
+    '/api/notifications/student/grade-notifications/mark-all-read/',
+    { method: 'PUT', credentials: 'include' }
+  );
+  
+  if (response.ok) {
+    const data = await response.json();
+    showSuccess(data.message);
+    refreshNotifications();
+  }
+};</code>
+                        </div>
+                    </div>
+
+                    <!-- Student Field Update Notifications -->
+                    <div class="endpoint-card" id="notifications-student-field-updates">
+                        <div class="endpoint-header">
+                            <span class="method-badge method-get">GET</span>
+                            <span class="endpoint-path">/api/notifications/student/field-update-notifications/</span>
+                        </div>
+                        
+                        <h4>Student Field Update Notifications (Paginated)</h4>
+                        <p>Student notifications about their field update requests: creation, approval, rejection. Supports pagination.</p>
+
+                        <h4>Permissions:</h4>
+                        <div class="permissions">
+                            <span class="permission-chip student">Student</span>
+                        </div>
+
+                        <h4>Query Parameters:</h4>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Parameter</th>
+                                    <th>Type</th>
+                                    <th>Description</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>page <span class="badge badge-optional">optional</span></td>
+                                    <td>integer</td>
+                                    <td>Page number (default: 1, 20 items per page)</td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <h4>Success Response (200 OK):</h4>
+                        <div class="code-block" data-language="JSON">
+                            <code>{
+  <span class="key">"count"</span>: <span class="number">5</span>,
+  <span class="key">"next"</span>: <span class="string">"/api/notifications/student/field-update-notifications/?page=2"</span>,
+  <span class="key">"previous"</span>: <span class="string">null</span>,
+  <span class="key">"results"</span>: [
+    {
+      <span class="key">"id"</span>: <span class="string">"notification-uuid"</span>,
+      <span class="key">"student_email"</span>: <span class="string">"student@example.com"</span>,
+      <span class="key">"notification_type"</span>: <span class="string">"request_created"</span>,
+      <span class="key">"message"</span>: <span class="string">"Your field update request has been created"</span>,
+      <span class="key">"is_read"</span>: <span class="boolean">false</span>,
+      <span class="key">"created_at"</span>: <span class="string">"2024-02-07T16:00:00Z"</span>
+    }
+  ]
+}</code>
+                        </div>
+
+                        <h4>Frontend Example:</h4>
+                        <div class="code-block" data-language="JavaScript">
+                            <code>const getStudentFieldNotifications = async (page = 1) => {
+  const response = await fetch(
+    `/api/notifications/student/field-update-notifications/?page=${page}`,
+    { credentials: 'include' }
+  );
+  
+  if (response.ok) {
+    const data = await response.json();
+    displayPaginatedNotifications(data.results, data.next, data.previous);
+  }
+};</code>
+                        </div>
+                    </div>
+
+                    <!-- Admin/Teacher Field Update Notifications -->
+                    <div class="endpoint-card" id="notifications-admin-field-updates">
+                        <div class="endpoint-header">
+                            <span class="method-badge method-get">GET</span>
+                            <span class="endpoint-path">/api/notifications/admin-teacher/field-update-notifications/</span>
+                        </div>
+                        
+                        <h4>Admin/Teacher Field Review Notifications (Paginated)</h4>
+                        <p>Shows field update requests that admins/teachers need to review. Only shows unread notifications. Paginated at 30 per page.</p>
+
+                        <h4>Permissions:</h4>
+                        <div class="permissions">
+                            <span class="permission-chip admin">Admin</span>
+                            <span class="permission-chip teacher">Teacher</span>
+                        </div>
+
+                        <h4>Query Parameters:</h4>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Parameter</th>
+                                    <th>Type</th>
+                                    <th>Description</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>page <span class="badge badge-optional">optional</span></td>
+                                    <td>integer</td>
+                                    <td>Page number (default: 1, 30 items per page)</td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <h4>Success Response (200 OK):</h4>
+                        <div class="code-block" data-language="JSON">
+                            <code>{
+  <span class="key">"count"</span>: <span class="number">2</span>,
+  <span class="key">"next"</span>: <span class="string">null</span>,
+  <span class="key">"previous"</span>: <span class="string">null</span>,
+  <span class="key">"results"</span>: [
+    {
+      <span class="key">"id"</span>: <span class="string">"notification-uuid"</span>,
+      <span class="key">"student_email"</span>: <span class="string">"student@example.com"</span>,
+      <span class="key">"notification_type"</span>: <span class="string">"request_created"</span>,
+      <span class="key">"message"</span>: <span class="string">"Student John Doe requested to update their field"</span>,
+      <span class="key">"is_read"</span>: <span class="boolean">false</span>,
+      <span class="key">"created_at"</span>: <span class="string">"2024-02-07T14:00:00Z"</span>
+    }
+  ]
+}</code>
+                        </div>
+
+                        <h4>Frontend Example:</h4>
+                        <div class="code-block" data-language="JavaScript">
+                            <code>const getFieldReviewNotifications = async (page = 1) => {
+  const response = await fetch(
+    `/api/notifications/admin-teacher/field-update-notifications/?page=${page}`,
+    { credentials: 'include' }
+  );
+  
+  if (response.ok) {
+    const data = await response.json();
+    displayReviewQueue(data.results);
+  }
+};</code>
+                        </div>
+                    </div>
+
+                    <!-- Field Notification Detail -->
+                    <div class="endpoint-card" id="notifications-field-detail">
+                        <div class="endpoint-header">
+                            <span class="method-badge method-get">GET</span>
+                            <span class="endpoint-path">/api/notifications/field-update-notifications/{notification_id}/</span>
+                        </div>
+                        
+                        <h4>Field Update Notification Detail</h4>
+                        <p>Gets a specific field update notification. Accessible by both student and reviewer (admin/teacher).</p>
+
+                        <h4>Permissions:</h4>
+                        <div class="permissions">
+                            <span class="permission-chip student">Student</span>
+                            <span class="permission-chip admin">Admin</span>
+                            <span class="permission-chip teacher">Teacher</span>
+                        </div>
+
+                        <h4>Success Response (200 OK):</h4>
+                        <div class="code-block" data-language="JSON">
+                            <code>{
+  <span class="key">"id"</span>: <span class="string">"notification-uuid"</span>,
+  <span class="key">"student_email"</span>: <span class="string">"student@example.com"</span>,
+  <span class="key">"notification_type"</span>: <span class="string">"request_approved"</span>,
+  <span class="key">"message"</span>: <span class="string">"Your field update request was approved"</span>,
+  <span class="key">"is_read"</span>: <span class="boolean">false</span>,
+  <span class="key">"created_at"</span>: <span class="string">"2024-02-07T15:30:00Z"</span>
+}</code>
+                        </div>
+                    </div>
+
+                    <!-- Student Field Update Unread Count -->
+                    <div class="endpoint-card" id="notifications-student-field-unread">
+                        <div class="endpoint-header">
+                            <span class="method-badge method-get">GET</span>
+                            <span class="endpoint-path">/api/notifications/student/field-update-notifications/unread-count/</span>
+                        </div>
+                        
+                        <h4>Student Field Notification Unread Count</h4>
+                        <p>Returns count of unread field update notifications for the student.</p>
+
+                        <h4>Permissions:</h4>
+                        <div class="permissions">
+                            <span class="permission-chip student">Student</span>
+                        </div>
+
+                        <h4>Success Response (200 OK):</h4>
+                        <div class="code-block" data-language="JSON">
+                            <code>{
+  <span class="key">"unread_count"</span>: <span class="number">1</span>
+}</code>
+                        </div>
+
+                        <h4>Frontend Example:</h4>
+                        <div class="code-block" data-language="JavaScript">
+                            <code>const updateFieldNotificationBadge = async () => {
+  const response = await fetch(
+    '/api/notifications/student/field-update-notifications/unread-count/',
+    { credentials: 'include' }
+  );
+  
+  if (response.ok) {
+    const data = await response.json();
+    document.querySelector('.field-badge').textContent = data.unread_count;
+  }
+};</code>
+                        </div>
+                    </div>
+
+                    <!-- Admin/Teacher Field Update Unread Count -->
+                    <div class="endpoint-card" id="notifications-admin-field-unread">
+                        <div class="endpoint-header">
+                            <span class="method-badge method-get">GET</span>
+                            <span class="endpoint-path">/api/notifications/admin-teacher/field-update-notifications/unread-count/</span>
+                        </div>
+                        
+                        <h4>Admin/Teacher Field Review Unread Count</h4>
+                        <p>Returns count of unread field review requests for the admin/teacher.</p>
+
+                        <h4>Permissions:</h4>
+                        <div class="permissions">
+                            <span class="permission-chip admin">Admin</span>
+                            <span class="permission-chip teacher">Teacher</span>
+                        </div>
+
+                        <h4>Success Response (200 OK):</h4>
+                        <div class="code-block" data-language="JSON">
+                            <code>{
+  <span class="key">"unread_count"</span>: <span class="number">7</span>
+}</code>
+                        </div>
+
+                        <h4>Frontend Example:</h4>
+                        <div class="code-block" data-language="JavaScript">
+                            <code>const updateReviewBadge = async () => {
+  const response = await fetch(
+    '/api/notifications/admin-teacher/field-update-notifications/unread-count/',
+    { credentials: 'include' }
+  );
+  
+  if (response.ok) {
+    const data = await response.json();
+    document.querySelector('.review-badge').textContent = data.unread_count;
+  }
+};</code>
+                        </div>
+                    </div>
+                </section>
+
+                <div class="endpoint-card">
+                        <h3>Forgot Password</h3>
+                        <div class="code-block" data-language="text">
+<code>
+POST /api/forgot-password/request-otp/    - Send reset OTP
+POST /api/forgot-password/verify-otp/     - Verify reset OTP
+POST /api/forgot-password/reset-password/ - Reset password
+</code>
+                        </div>
+                </div>
+
+                <p class="mt-2 text-muted">Notes: I scanned the codebase and ensured the following missing route was added: <strong>/api/courses/roles/</strong>. If you want endpoint-specific payload schemas and serializer-derived fields embedded here, I can expand each endpoint into full JSON request/response examples (per-app pages).</p>
+        </section>
+
+        <!-- Footer -->
     <footer>
         <p><strong>Students Grade Management Dashboard</strong></p>
         <p>API Documentation v1.0 | Generated: February 2026</p>

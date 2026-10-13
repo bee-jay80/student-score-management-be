@@ -8,14 +8,16 @@ def set_jwt_cookies(response, access, refresh):
         key="access_token",
         value=access,
         httponly=True,
-        samesite="Lax",
+        samesite="None",
+        secure=True,
     )
     
     response.set_cookie(
         key="refresh_token",
         value=refresh,
         httponly=True,
-        samesite="Lax",
+        samesite="None",
+        secure=True,
     )
 
 

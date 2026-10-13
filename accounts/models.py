@@ -6,6 +6,7 @@ from django.conf import settings
 
 # image upload using cloudinary storing the image url in the model
 import cloudinary.models
+from courses.models import Course
 
 
 

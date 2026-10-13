@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Course, Enrollment
+from .models import Course, CourseRole
 
 class CourseSerializer(serializers.ModelSerializer):
     class Meta:
@@ -13,16 +13,25 @@ class CourseSerializer(serializers.ModelSerializer):
             "is_active",
         )
 
-class EnrollmentSerializer(serializers.ModelSerializer):
+# class EnrollmentSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = Enrollment
+#         fields = (
+#             "id",
+#             "student",
+#             "course",
+#             "month",
+#             "status",
+#             "enrolled_at",
+#             "completed_at",
+#             "updated_at",
+#         )
+
+class CourseRoleSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Enrollment
+        model = CourseRole
         fields = (
             "id",
-            "student",
-            "course",
-            "month",
-            "status",
-            "enrolled_at",
-            "completed_at",
-            "updated_at",
+            "name",
+            "description",
         )

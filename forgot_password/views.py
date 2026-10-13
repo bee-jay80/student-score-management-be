@@ -1,6 +1,6 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework import status
+from rest_framework import serializers, status
 from django.contrib.auth import get_user_model
 from .utils.emails import send_forgot_password_otp_email
 from accounts.utils.otp import create_otp, verify_otp
@@ -12,6 +12,13 @@ from django.utils.timezone import now
 from datetime import timedelta
 from django.contrib.auth.hashers import make_password
 from django.core.cache import cache
+from drf_spectacular.utils import (
+    OpenApiParameter,
+    OpenApiResponse,
+    OpenApiTypes,
+    extend_schema,
+    inline_serializer,
+)
 
 User = get_user_model()
 
@@ -20,6 +27,21 @@ class ForgotPasswordRequestView(APIView):
     permission_classes = []
     authentication_classes = []
 
+    @extend_schema(
+        summary="Request a password-reset OTP",
+        description="Send a one-time password to the account email and set a verification-session cookie.",
+        request=ForgotPasswordSerializer,
+        responses={
+            200: inline_serializer(
+                name="ForgotPasswordRequestResponse",
+                fields={"detail": serializers.CharField()},
+            ),
+            400: OpenApiResponse(description="The account is inactive or the request data is invalid."),
+            429: OpenApiResponse(description="The OTP request rate limit was exceeded."),
+            500: OpenApiResponse(description="The OTP email could not be sent."),
+        },
+        tags=["Password recovery"],
+    )
     def post(self, request):
         serializer = ForgotPasswordSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -76,6 +98,27 @@ class OTPVerifyView(APIView):
     permission_classes = []
     authentication_classes = []
 
+    @extend_schema(
+        summary="Verify a password-reset OTP",
+        description="Verify the OTP associated with the verification-session cookie.",
+        parameters=[
+            OpenApiParameter(
+                name="verification_session",
+                type=OpenApiTypes.STR,
+                location=OpenApiParameter.COOKIE,
+                description="Verification-session cookie issued when requesting the OTP.",
+            ),
+        ],
+        request=OTPVerifySerializer,
+        responses={
+            200: inline_serializer(
+                name="PasswordResetOTPVerificationResponse",
+                fields={"detail": serializers.CharField()},
+            ),
+            400: OpenApiResponse(description="The verification session or OTP is invalid or expired."),
+        },
+        tags=["Password recovery"],
+    )
     def post(self, request):
         serializer = OTPVerifySerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -111,6 +154,27 @@ class ResetPasswordView(APIView):
     permission_classes = []
     authentication_classes = []
 
+    @extend_schema(
+        summary="Reset the account password",
+        description="Set a new password after successful OTP verification.",
+        parameters=[
+            OpenApiParameter(
+                name="verification_session",
+                type=OpenApiTypes.STR,
+                location=OpenApiParameter.COOKIE,
+                description="Verification-session cookie issued during OTP verification.",
+            ),
+        ],
+        request=ResetPasswordSerializer,
+        responses={
+            200: inline_serializer(
+                name="PasswordResetResponse",
+                fields={"detail": serializers.CharField()},
+            ),
+            400: OpenApiResponse(description="The verification session is invalid or OTP verification is required."),
+        },
+        tags=["Password recovery"],
+    )
     def post(self, request):
         serializer = ResetPasswordSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
