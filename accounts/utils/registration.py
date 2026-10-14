@@ -60,6 +60,7 @@ def _send_otp_background(user, otp):
 
 def register_or_resend_otp(data):
     email = data["email"]
+    courses = data.get("courses")
 
     user = User.objects.filter(email=email).first()
 
@@ -74,6 +75,8 @@ def register_or_resend_otp(data):
             timezone.now() + timedelta(minutes=OTP_EXPIRY_MINUTES)
         )
         user.save()
+        if courses is not None:
+            user.courses.set(courses)
 
         try:
             otp = create_otp(user, purpose="EMAIL_VERIFICATION")
@@ -111,6 +114,7 @@ def register_or_resend_otp(data):
         timezone.now() + timedelta(minutes=OTP_EXPIRY_MINUTES)
     )
     user.save()
+    user.courses.set(courses or [])
 
     try:
         otp = create_otp(user, purpose="EMAIL_VERIFICATION")

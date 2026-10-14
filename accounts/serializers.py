@@ -1,12 +1,19 @@
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
 from accounts.models import UserRole, ImageUpload
+from courses.models import Course
 
 User = get_user_model()
 
 class RegisterSerializer(serializers.ModelSerializer):
     email = serializers.EmailField(required=True)
     password = serializers.CharField(write_only=True)
+    courses = serializers.PrimaryKeyRelatedField(
+        queryset=Course.objects.filter(is_active=True),
+        many=True,
+        required=False,
+        write_only=True,
+    )
 
     class Meta:
         model = User
@@ -16,10 +23,12 @@ class RegisterSerializer(serializers.ModelSerializer):
             "last_name",
             "role",
             "password",
+            "courses",
         )
 
     def create(self, validated_data):
         validated_data.pop("role",None)
+        courses = validated_data.pop("courses", [])
         user = User.objects.create_user(
             email=validated_data["email"],
             password=validated_data["password"],
@@ -29,6 +38,7 @@ class RegisterSerializer(serializers.ModelSerializer):
             is_active=False,            
             is_email_verified=False,
         )
+        user.courses.set(courses)
         return user
     
     def validate_email(self, value):

@@ -22,8 +22,8 @@ class Student(models.Model):
         related_name="student_profile"
     )
 
-    matric_no = models.CharField(max_length=50, unique=True)
     branch_location = models.CharField(max_length=100)
+    matric_no = models.CharField(max_length=50, unique=True)
     phone_number = models.CharField(max_length=20)
     address = models.TextField()
     gender = models.CharField(max_length=10, choices=gender_choice)
