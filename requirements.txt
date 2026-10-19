@@ -10,6 +10,7 @@ click-plugins==1.1.1.2
 click-repl==0.3.0
 cloudinary==1.44.1
 colorama==0.4.6
+dj-database-url==2.3.0
 django==6.0.1
 django-celery-beat==2.1.0
 django-celery-results==2.6.0
@@ -46,3 +47,5 @@ uritemplate==4.2.0
 urllib3==2.6.3
 vine==5.1.0
 wcwidth==0.3.5
+whitenoise==6.9.0
+gunicorn==26.2.0

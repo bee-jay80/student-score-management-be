@@ -37,6 +37,9 @@ A Django REST Framework-based backend application for managing student grades, c
 - `djangorestframework>=3.16.1`
 - `djangorestframework-simplejwt>=5.5.1`
 - `django-cors-headers>=4.9.0`
+- `gunicorn>=26.2.0`
+- `dj-database-url>=2.3.0`
+- `whitenoise>=6.9.0`
 - `celery>=5.6.2`
 - `redis>=7.1.0`
 - `cloudinary>=1.44.1`
@@ -120,6 +123,38 @@ python manage.py runserver
 ```
 
 The API will be available at `http://localhost:8000`
+
+## Production deployment
+
+Deploy on a Linux host with HTTPS terminated by a trusted reverse proxy. Configure these environment variables in the hosting provider's secret/configuration settings (do not commit production credentials or a production `.env` file):
+
+```env
+DEBUG=False
+DJANGO_SECRET_KEY=<a-long-random-secret>
+ALLOWED_HOSTS=api.example.com
+DATABASE_URL=<database-connection-url>
+FRONTEND_URL=https://your-frontend.example.com
+CORS_ALLOWED_ORIGINS=https://your-frontend.example.com
+CSRF_TRUSTED_ORIGINS=https://your-frontend.example.com
+```
+
+Provide the SMTP and Cloudinary variables documented in the local `.env` setup if the deployed application needs email delivery and image uploads. For a reverse proxy that sets `X-Forwarded-Proto` to `https` and strips untrusted client-supplied copies of that header, set `TRUST_PROXY_SSL_HEADER=True`; otherwise leave it unset.
+
+Install dependencies, apply database migrations, and collect static assets as part of deployment:
+
+```bash
+pip install -r requirements.txt
+python manage.py migrate
+python manage.py collectstatic --noinput
+```
+
+The included `Procfile` starts the application with Gunicorn. If your host does not use Procfiles, use this as its web start command:
+
+```bash
+gunicorn config.wsgi:application --bind 0.0.0.0:$PORT
+```
+
+Before exposing the service, run `python manage.py check --deploy` with the production environment variables configured. `DEBUG=False` enables HTTPS redirects and secure session, CSRF, and JWT cookies; set `SECURE_HSTS_SECONDS=0` only when you need to disable HSTS during an initial HTTPS rollout.
 
 ## API Endpoints
 
