@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Course, CourseRole
+from .models import Course, CourseDetail
 
 class CourseSerializer(serializers.ModelSerializer):
     class Meta:
@@ -27,9 +27,9 @@ class CourseSerializer(serializers.ModelSerializer):
 #             "updated_at",
 #         )
 
-class CourseRoleSerializer(serializers.ModelSerializer):
+class CourseDetailSerializer(serializers.ModelSerializer):
     class Meta:
-        model = CourseRole
+        model = CourseDetail
         fields = (
             "id",
             "name",

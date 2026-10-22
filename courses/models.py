@@ -3,7 +3,7 @@ import uuid
 # Avoid importing `Student` at module import time to prevent circular imports.
 # Use string reference 'students.Student' in ForeignKey declarations instead.
 
-class CourseRole(models.Model):
+class CourseDetail(models.Model):
 
     STATUS_CHOICES = (
         ("ongoing", "Ongoing"),
@@ -27,7 +27,7 @@ class CourseRole(models.Model):
 class Course(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     title = models.CharField(max_length=200)  # e.g. "Python Basics", "Django for Beginners", "Html"
-    field = models.ForeignKey(CourseRole, on_delete=models.SET_NULL, null=True, related_name="courses")
+    field = models.ForeignKey(CourseDetail, on_delete=models.SET_NULL, null=True, related_name="courses")
     duration = models.PositiveIntegerField()  # e.g. "3" to represent the month
     description = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)

@@ -107,6 +107,11 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 
 # Default database if testing locally but online MYSQL database for production
+# Database Configuration
+
+
+# Database Configuration
+
 if DEBUG:
     DATABASES = {
         "default": {
@@ -115,12 +120,40 @@ if DEBUG:
         }
     }
 else:
-    database_url = os.getenv("DATABASE_URL")
-    if not database_url:
-        raise ImproperlyConfigured("DATABASE_URL must be set when DEBUG is false.")
+    required_db_vars = [
+        "DB_NAME",
+        "DB_USER",
+        "DB_PASSWORD",
+        "DB_HOST",
+        "DB_PORT",
+    ]
+
+    missing_vars = [
+        name for name in required_db_vars
+        if not os.getenv(name)
+    ]
+
+    if missing_vars:
+        raise ImproperlyConfigured(
+            f"Missing database environment variables: {', '.join(missing_vars)}"
+        )
+
     DATABASES = {
-        "default": dj_database_url.parse(database_url, conn_max_age=600)
+        "default": {
+            "ENGINE": "django.db.backends.mysql",
+            "NAME": os.getenv("DB_NAME"),
+            "USER": os.getenv("DB_USER"),
+            "PASSWORD": os.getenv("DB_PASSWORD"),
+            "HOST": os.getenv("DB_HOST"),
+            "PORT": os.getenv("DB_PORT"),
+            "CONN_MAX_AGE": 600,
+            "CONN_HEALTH_CHECKS": True,
+            # "OPTIONS": {
+            #     "sslmode": os.getenv("DB_SSLMODE", "require"),
+            # },
+        }
     }
+
 # Password validation
 # https://docs.djangoproject.com/en/6.0/ref/settings/#auth-password-validators
 

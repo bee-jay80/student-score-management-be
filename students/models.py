@@ -2,7 +2,7 @@ from django.db import models
 from django.conf import settings
 import uuid
 
-from courses.models import CourseRole, Course
+from courses.models import CourseDetail, Course
 
 
 class Student(models.Model):
@@ -30,7 +30,7 @@ class Student(models.Model):
     date_of_birth = models.DateField(blank=True, null=True)
     enrolled_at = models.DateTimeField(auto_now_add=True)
     month_used = models.PositiveIntegerField(default=0)  # Track the number of months used
-    fields = models.ManyToManyField(CourseRole, related_name="students")
+    fields = models.ManyToManyField(CourseDetail, related_name="students")
 
     def __str__(self):
         return self.user.email
@@ -51,7 +51,7 @@ class StudentFieldUpdateRequest(models.Model):
     student = models.ForeignKey(
         Student, on_delete=models.CASCADE, related_name="field_update_requests"
     )
-    requested_role = models.ForeignKey(CourseRole, on_delete=models.CASCADE)
+    requested_role = models.ForeignKey(CourseDetail, on_delete=models.CASCADE)
     message = models.TextField(blank=True)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default=STATUS_PENDING)
     created_at = models.DateTimeField(auto_now_add=True)

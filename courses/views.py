@@ -2,8 +2,8 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 
-from .serializers import CourseSerializer, CourseRoleSerializer
-from .models import Course, CourseRole
+from .serializers import CourseSerializer, CourseDetailSerializer
+from .models import Course, CourseDetail
 
 from accounts.permissions import IsStudent, IsTeacher, IsAdmin
 from rest_framework.permissions import IsAuthenticated
@@ -228,15 +228,15 @@ class CourseUpdateView(APIView):
     
 
 
-class CourseRoleCreateView(APIView):
+class CourseDetailCreateView(APIView):
     permission_classes = [IsAuthenticated, IsAdmin]
 
     @extend_schema(
         summary="Create a course role",
         description="Create a course role. Only administrators may use this endpoint.",
-        request=CourseRoleSerializer,
+        request=CourseDetailSerializer,
         responses={
-            201: CourseRoleSerializer,
+            201: CourseDetailSerializer,
             400: OpenApiResponse(description="The submitted course-role data is invalid."),
             401: OpenApiResponse(description="Authentication is required."),
             403: OpenApiResponse(description="The user is not an administrator."),
@@ -244,7 +244,7 @@ class CourseRoleCreateView(APIView):
         tags=["Course roles"],
     )
     def post(self, request):
-        serializer = CourseRoleSerializer(data=request.data)
+        serializer = CourseDetailSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -252,19 +252,19 @@ class CourseRoleCreateView(APIView):
 
 
 
-class CourseRoleListView(APIView):
+class CourseDetailListView(APIView):
     permission_classes = [IsAuthenticated]
 
     @extend_schema(
         summary="List course roles",
         description="Return all course roles.",
         responses={
-            200: CourseRoleSerializer(many=True),
+            200: CourseDetailSerializer(many=True),
             401: OpenApiResponse(description="Authentication is required."),
         },
         tags=["Course roles"],
     )
     def get(self, request):
-        roles = CourseRole.objects.all()
-        serializer = CourseRoleSerializer(roles, many=True)
+        roles = CourseDetail.objects.all()
+        serializer = CourseDetailSerializer(roles, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)

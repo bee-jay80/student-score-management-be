@@ -10,7 +10,7 @@ click-plugins==1.1.1.2
 click-repl==0.3.0
 cloudinary==1.44.1
 colorama==0.4.6
-dj-database-url==2.3.0
+dj-database-url==3.1.2
 django==6.0.1
 django-celery-beat==2.1.0
 django-celery-results==2.6.0
@@ -20,6 +20,7 @@ django-timezone-field==4.2.3
 djangorestframework==3.16.1
 djangorestframework-simplejwt==5.5.1
 drf-spectacular==0.30.0
+gunicorn==26.2.0
 inflection==0.5.1
 jsonschema==4.26.0
 jsonschema-specifications==2025.9.1
@@ -47,5 +48,4 @@ uritemplate==4.2.0
 urllib3==2.6.3
 vine==5.1.0
 wcwidth==0.3.5
-whitenoise==6.9.0
-gunicorn==26.2.0
+whitenoise==6.12.0
