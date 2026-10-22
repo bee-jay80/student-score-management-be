@@ -297,3 +297,6 @@ SECURE_PROXY_SSL_HEADER = (
     if env_bool("TRUST_PROXY_SSL_HEADER")
     else None
 )
+
+
+APP_API_SECRET_KEY = os.getenv("APP_SECRET_KEY", "")

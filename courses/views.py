@@ -5,7 +5,7 @@ from rest_framework import status
 from .serializers import CourseSerializer, CourseDetailSerializer
 from .models import Course, CourseDetail
 
-from accounts.permissions import IsStudent, IsTeacher, IsAdmin
+from accounts.permissions import IsStudent, IsTeacher, IsAdmin, IsAuthenticatedOrValidAPIKey
 from rest_framework.permissions import IsAuthenticated
 from drf_spectacular.utils import (
     OpenApiParameter,
@@ -15,21 +15,30 @@ from drf_spectacular.utils import (
 )
 
 
+
+
 class CourseListView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticatedOrValidAPIKey]
 
     @extend_schema(
-        summary="List active courses",
-        description="Return all active courses.",
+        summary="?api_key=API KEY. List active courses",
+        description="""Return all active courses. Authentication or a valid API key is required.
+         /api/courses/courses/?api_key=API KEY""",
         responses={
             200: CourseSerializer(many=True),
-            401: OpenApiResponse(description="Authentication is required."),
+            401: OpenApiResponse(
+                description="Authentication or a valid API key is required."
+            ),
+            403: OpenApiResponse(
+                description="Access denied."
+            ),
         },
         tags=["Courses"],
     )
     def get(self, request):
         courses = Course.objects.filter(is_active=True)
         serializer = CourseSerializer(courses, many=True)
+
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 class StudentCourseListView(APIView):
@@ -61,11 +70,14 @@ class StudentCourseListView(APIView):
 
     
 class CourseCreateView(APIView):
-    permission_classes = [IsAuthenticated, IsTeacher | IsAdmin]
+    # permission_classes = [IsAuthenticated, IsTeacher | IsAdmin]
+    permission_classes = [IsAuthenticatedOrValidAPIKey]
+
 
     @extend_schema(
         summary="Create a course",
-        description="Create a course. Only teachers and administrators may use this endpoint.",
+        description="""Create a course. Only teachers and administrators may use this endpoint.
+        /api/courses/courses/?api_key=API KEY""",
         request=CourseSerializer,
         responses={
             201: CourseSerializer,
@@ -111,6 +123,7 @@ class courseDetailView(APIView):
         
         serializer = CourseSerializer(course)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
     
 class CourseUpdateView(APIView):
     permission_classes = [IsAuthenticated, IsTeacher | IsAdmin]
