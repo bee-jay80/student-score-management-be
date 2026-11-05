@@ -59,13 +59,13 @@ INSTALLED_APPS = [
     'corsheaders',
     'drf_spectacular',
 
-    'accounts',
-    'notifications',
-    'courses',
-    'students',
-    'grades',
-    'teachers',
-    'forgot_password'
+    'apps.accounts',
+    'apps.notifications',
+    'apps.courses',
+    'apps.students',
+    'apps.grades',
+    'apps.teachers',
+    'apps.forgot_password'
 ]
 
 MIDDLEWARE = [
@@ -78,7 +78,6 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'accounts.middleware.RefreshTokenMiddleware',
 ]
 
 ROOT_URLCONF = 'config.urls'
@@ -206,7 +205,7 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
     ],
     "DEFAULT_AUTHENTICATION_CLASSES": [
-        "accounts.authentication.CookieJWTAuthentication",
+        "rest_framework_simplejwt.authentication.JWTAuthentication"
     ],
 
     "DEFAULT_THROTTLE_CLASSES": [
